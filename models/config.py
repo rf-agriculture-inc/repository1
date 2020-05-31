@@ -1,48 +1,51 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields
-from .connector import MagentoAPI
-from odoo.exceptions import UserError
 
 
 class ResCompany(models.Model):
     _inherit = 'res.company'
 
     magento_bridge = fields.Boolean()
-    mag_host = fields.Char(string="Host", help="Integration domain")
-    mag_consumer_key = fields.Char(string="Consumer Key")
-    mag_consumer_secret = fields.Char(string="Consumer Secret")
-    mag_access_token = fields.Char(string="Access Token")
-    mag_access_token_secret = fields.Char(string="Access Token Secret")
 
 
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     magento_bridge = fields.Boolean(related='company_id.magento_bridge', readonly=False)
-    mag_host = fields.Char(related='company_id.mag_host', readonly=False)
-    mag_consumer_key = fields.Char(related='company_id.mag_consumer_key', readonly=False)
-    mag_consumer_secret = fields.Char(related='company_id.mag_consumer_secret', readonly=False)
-    mag_access_token = fields.Char(related='company_id.mag_access_token', readonly=False)
-    mag_access_token_secret = fields.Char(related='company_id.mag_access_token_secret', readonly=False)
 
-    def test_magento_connection(self):
-        """Test call to check connection."""
-        try:
-            api_connector = MagentoAPI(self)
-            res = api_connector.test_connection()
-            if res.ok:
-                title = "Connection Test Succeeded!"
-                message = "Everything seems properly set up!"
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': title,
-                        'message': message,
-                        'sticky': False,
-                    }
-                }
-            else:
-                raise Exception(res.text)
-        except Exception as e:
-            raise UserError(f"Connection Test Failed! Here is what we got instead:\n{e}")
+
+class MagentoConfig(models.Model):
+    _name = 'magento.bridge.config'
+    _description = 'Magento Bridge Configuration'
+
+    name = fields.Char()
+    host = fields.Char(string="Host", help="Integration domain", required=True)
+    consumer_key = fields.Char(string="Consumer Key", required=True)
+    consumer_secret = fields.Char(string="Consumer Secret", required=True)
+    access_token = fields.Char(string="Access Token", required=True)
+    access_token_secret = fields.Char(string="Access Token Secret", required=True)
+    mapping_payment_ids = fields.One2many('magento.payment.mapping', 'mag_config_id', string='Payment Mapping')
+    default_payment_method = fields.Char(string="Payment Method", required=True)
+    mapping_shipping_ids = fields.One2many('magento.shipping.mapping', 'mag_config_id', string='Shipping Mapping')
+    default_shipping_method_code = fields.Char(string="Shipping Method Code", required=True)
+    default_shipping_carrier_code = fields.Char(string="Shipping Carrier Code", required=True)
+
+
+class MagentoPaymentMapping(models.Model):
+    _name = 'magento.payment.mapping'
+    _description = 'Magento Payment Mapping'
+
+    journal_id = fields.Many2one('account.journal', string="Odoo Journal")
+    mag_payment_method = fields.Char(string="Magento Payment Method")
+    mag_config_id = fields.Many2one('magento.bridge.config')
+
+
+class MagentoShippingMapping(models.Model):
+    _name = 'magento.shipping.mapping'
+    _description = 'Magento Shipping Mapping'
+
+    carrier_id = fields.Many2one('delivery.carrier', string="Odoo Shipping Method")
+    mag_shipping_method_code = fields.Char(string="Magento Shipping Method Code")
+    mag_shipping_carrier_code = fields.Char(string="Magento Shipping Carrier Code")
+    mag_config_id = fields.Many2one('magento.bridge.config')
+

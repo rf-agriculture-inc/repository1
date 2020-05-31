@@ -1,6 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<data>
+
+        <record id="magento_config_view_form" model="ir.ui.view">
+            <field name="name">magento.bridge.config form view</field>
+            <field name="model">magento.bridge.config</field>
+            <field name="arch" type="xml">
+                <form create="0" delete="0">
+                    <sheet>
+                        <group name="group_1">
+                            <group name="credentials" string="Credentials">
+                                <field name="host"/>
+                                <field name="consumer_key"/>
+                                <field name="consumer_secret"/>
+                                <field name="access_token"/>
+                                <field name="access_token_secret"/>
+                            </group>
+                            <group name="defaults" string="Default Settings">
+                                <field name="default_payment_method"/>
+                                <field name="default_shipping_method_code"/>
+                                <field name="default_shipping_carrier_code"/>
+                            </group>
+                        </group>
+                        <!--<group name="payment_mapping" string="Payment Mapping">-->
+                            <!--<field name="mapping_payment_ids" nolabel="1" context="{'default_mag_config_id':id}">-->
+                                <!--<tree editable="top">-->
+                                    <!--<field name="journal_id"/>-->
+                                    <!--<field name="mag_payment_method"/>-->
+                                <!--</tree>-->
+                            <!--</field>-->
+                        <!--</group>-->
+                        <group name="shipping_mapping" string="Shipping Mapping">
+                            <field name="mapping_shipping_ids" nolabel="1" context="{'default_mag_config_id':id}">
+                                <tree editable="top">
+                                    <field name="carrier_id"/>
+                                    <field name="mag_shipping_method_code"/>
+                                    <field name="mag_shipping_carrier_code"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_magento_config" model="ir.actions.act_window">
+            <field name="name">Magento Bridge Configuration</field>
+            <field name="res_model">magento.bridge.config</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="magento_config_view_form"/>
+            <field name="res_id" ref="magento_bridge_config"/>
+        </record>
+
 		<record id="magento_res_config_setting_form_view" model="ir.ui.view">
 			<field name="name">magento.res.config.setting.form.view</field>
 			<field name="model">res.config.settings</field>
@@ -17,27 +68,9 @@
                                 <div class="text-muted">
                                     Odoo - Magento API Bridge
                                 </div>
-                                <div class="content-group"
-                                     name="magento_bridge"
-                                     attrs="{'invisible': [('magento_bridge', '=', False)]}">
-                                    <div class="mt16">
-                                        <label for="mag_host" class="col-3 col-lg-3 o_light_label"/>
-                                        <field name="mag_host"
-                                               attrs="{'required': [('magento_bridge', '=', True)]}"/>
-                                        <label for="mag_consumer_key" class="col-3 col-lg-3 o_light_label"/>
-                                        <field name="mag_consumer_key"
-                                               attrs="{'required': [('magento_bridge', '=', True)]}"/>
-                                        <label for="mag_consumer_secret" class="col-3 col-lg-3 o_light_label"/>
-                                        <field name="mag_consumer_secret"
-                                               attrs="{'required': [('magento_bridge', '=', True)]}"/>
-                                        <label for="mag_access_token" class="col-3 col-lg-3 o_light_label"/>
-                                        <field name="mag_access_token"
-                                               attrs="{'required': [('magento_bridge', '=', True)]}"/>
-                                        <label for="mag_access_token_secret" class="col-3 col-lg-3 o_light_label"/>
-                                        <field name="mag_access_token_secret"
-                                               attrs="{'required': [('magento_bridge', '=', True)]}"/>
-                                    </div>
-                                    <button type="object" name="test_magento_connection" string="Test Connection"/>
+                                <div class="mt8">
+                                    <button name="%(action_magento_config)d" icon="fa-arrow-right" type="action"
+                                            string="Manage Connection" class="btn-link"/>
                                 </div>
                             </div>
                         </div>
@@ -45,5 +78,6 @@
 				</xpath>
 			</field>
 		</record>
+
 	</data>
 </odoo>

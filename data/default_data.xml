@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="magento_bridge_config" model="magento.bridge.config">
+            <field name="name">Magento Bridge Configuration</field>
+        </record>
+
+    </data>
+</odoo>
