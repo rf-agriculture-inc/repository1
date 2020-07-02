@@ -15,3 +15,4 @@ class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     mag_id = fields.Integer(string="Magento ID", copy=False, readonly=True, help="Magento Cart Item ID")
+    mag_quote_id = fields.Integer(string="Magento Quote ID", copy=False, readonly=True, help="Magento Cart Item ID")

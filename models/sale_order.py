@@ -19,7 +19,7 @@ class SaleOrder(models.Model):
     """
     def action_confirm(self):
         """
-        Send/Create Order in Magento if Magento Brigde activated
+        Send/Create Order in Magento if Magento Bridge activated
         :return: super
         """
         res = super(SaleOrder, self).action_confirm()
@@ -57,6 +57,12 @@ class SaleOrder(models.Model):
         4- Add payment info
         :return:
         """
+        if self.mag_id:
+            msg = f"Skip to create new order in Magento."
+            _logger.error(msg)
+            self.message_post(subject='Magento Integration ERROR', body=msg,
+                              message_type='notification')
+            return False
         try:
             # Init Connection
             api_connector = MagentoAPI(self)
@@ -93,11 +99,12 @@ class SaleOrder(models.Model):
                 if not line.mag_id or line.mag_id == 0:
                     cart_item = api_connector.add_carts_items(quote_id, line)
                     if cart_item:
-                        line.write({'mag_id': cart_item['item_id']})
-                        if line.product_uom_qty != cart_item['qty'] or line.price_unit != cart_item['price']:
+                        line.write({'mag_quote_id': cart_item['item_id']})
+                        api_connector.update_cart_item(line)
+
+                        if line.product_uom_qty != cart_item['qty']:
                             error_msg = f"Magento Integration ERROR: Order line with {line.product_id.display_name} " \
-                                f"has different values in Magento: Quantity: {cart_item['qty']}, " \
-                                f"Unit Price: {cart_item['price']}."
+                                f"has different values in Magento: Quantity: {cart_item['qty']}"
                             _logger.error(error_msg)
                             self.message_post(subject='Magento Integration ERROR', body=error_msg,
                                               message_type='notification')
@@ -114,6 +121,18 @@ class SaleOrder(models.Model):
             mag_order_id = api_connector.add_payment_info(quote_id, self)
             if mag_order_id:
                 self.mag_id = mag_order_id
+                # Update Shipping Price
+                shipping = self.order_line.filtered(lambda r: r.is_delivery is True)
+                if shipping:
+                    shipping_price = shipping[0].price_subtotal
+                    api_connector.update_shipping_price(self, shipping_price)
+                # Update Item IDs
+                res_order_items = api_connector.get_order_items_by_id(mag_order_id)
+                if res_order_items.get('items'):
+                    for item in res_order_items.get('items'):
+                        order_line = self.order_line.filtered(lambda o: o.mag_quote_id == item['quote_item_id'])
+                        if order_line:
+                            order_line.mag_id = item['item_id']
                 msg = f'Order sent to Magento. Magento Order ID: {mag_order_id}'
                 self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
                 _logger.info(msg)

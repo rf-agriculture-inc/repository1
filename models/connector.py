@@ -57,20 +57,6 @@ class MagentoAPI(object):
         response = requests.get(url, headers=self.get_header(), params=filters)
         return self.process_response(response)
 
-    # def get(self, model, filters):
-    #     url = f'{self.config.host}/rest/V1/{model}'
-    #     body = {
-    #         "search_criteria": {
-    #             "filter_groups": [
-    #                 {
-    #                     "filters": filters
-    #                 }
-    #             ]
-    #         }
-    #     }
-    #     response = requests.get(url, headers=self.get_header(), params=body)
-    #     return self.process_response(response)
-
     def put(self, model, id, payload):
         """
         Magento PUT API Call
@@ -136,7 +122,7 @@ class MagentoAPI(object):
                 "sku": line.product_id.default_code,
                 "qty": line.product_uom_qty,
                 "price": line.price_unit,
-                "quote_id": quote_id
+                "quote_id": quote_id,
             }
         }
         response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
@@ -244,6 +230,91 @@ class MagentoAPI(object):
         response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
         return self.process_response(response, order)
 
+    def update_cart_item(self, line):
+        """
+        Update Order Line Price Unit in Magento
+        :param line: Odoo Order Line
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/V1/carts/updateCartItem/{line.order_id.mag_quote_id}/{line.mag_quote_id}/{line.price_unit}'
+        _logger.info(f'API Call URL: {url}')
+        response = requests.put(url, headers=self.get_header())
+        return self.process_response(response, line.order_id)
+
+    def update_shipping_price(self, order_id, shipping_price):
+        """
+        Update Custome Shipping Price
+        :param order_id: Order object
+        :param shipping_price: Shipping Price
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/all/V1/order/{order_id.mag_id}/shippingprice'
+        _logger.info(f'API Call URL: {url}')
+        payload = {
+            "shippingPrice": shipping_price,
+        }
+        response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response, order_id)
+
+    def get_order_items_by_id(self, order_id):
+        """
+        Get Magento Order Info
+        :param order_id: Magento Order ID
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/V1/orders/{order_id}'
+        _logger.info(f'API Call URL: {url}')
+        response = requests.get(url, headers=self.get_header())
+        return self.process_response(response)
+
+    def create_shipment(self, picking):
+        """
+        Create new Shipment for given Order
+        :param picking: Odoo Stock Picking Object
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/V1/order/{picking.sale_id.mag_id}/ship'
+        _logger.info(f'API Call URL: {url}')
+        items = []
+        for move_line_id in picking.move_line_ids:
+            order_item_id = move_line_id.move_id.sale_line_id.mag_id
+            qty = move_line_id.qty_done
+            items.append({
+                "order_item_id": order_item_id,
+                "qty": qty,
+            })
+        method_code, carrier_code = self.get_shipping_codes(picking.sale_id)
+        payload = {
+            "comment": {
+              "comment": picking.carrier_id.name,
+              "is_visible_on_front": 1,
+            },
+            "items": items,
+            "tracks": [{
+                "carrier_code": carrier_code,
+                "title": picking.carrier_id.name,
+                "track_number": picking.carrier_tracking_ref,
+            }]
+        }
+        response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response, picking)
+
+    def create_invoice(self, invoice, order_id):
+        """
+        Create Invoice for given Order
+        :param invoice: Account Move Object
+        :param order_id: Magento Order ID
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/V1/order/{order_id}/invoice'
+        _logger.info(f'API Call URL: {url}')
+        payload = {
+          "capture": True,
+          "notify": True
+        }
+        response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response, invoice)
+
     """
     Helpers
     """
@@ -255,7 +326,7 @@ class MagentoAPI(object):
         :param model: Odoo Model
         :return: json response or None
         """
-        _logger.debug(f"Magento Response: {res.text}")
+        _logger.info(f"Magento Response: {res.text}")
         if res.ok:
             json_data = json.loads(res.content)
             return json_data
@@ -265,18 +336,6 @@ class MagentoAPI(object):
             _logger.error(msg)
             if model:
                 model.message_post(subject='Magento Integration ERROR', body=msg, message_type='notification')
-
-    # def get_payment_method(self, order):
-    #     """
-    #     Get Magento Payment Method from Configuration
-    #     :return: str, payment method
-    #     """
-    #     payment = self.config.mapping_payment_ids.filtered(lambda r: r.journal_id.id == order.journal_id.id)
-    #     if payment:
-    #         payment_method = payment[0].mag_payment_method
-    #     else:
-    #         payment_method = self.config.default_payment_method
-    #     return payment_method
 
     def get_shipping_codes(self, order):
         """
