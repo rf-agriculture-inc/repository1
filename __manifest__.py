@@ -12,7 +12,7 @@
     'author': "Dmytro Bartoshchuk",
     'category': 'Uncategorized',
     'version': '1.0',
-    'depends': ['base', 'sale', 'sale_management', 'stock'],
+    'depends': ['base', 'sale', 'sale_management', 'stock', 'account', 'delivery'],
     'data': [
         'security/ir.model.access.csv',
         'data/default_data.xml',

@@ -19,16 +19,16 @@ class MagentoConfig(models.Model):
     _description = 'Magento Bridge Configuration'
 
     name = fields.Char()
-    host = fields.Char(string="Host", help="Integration domain", required=True)
-    consumer_key = fields.Char(string="Consumer Key", required=True)
-    consumer_secret = fields.Char(string="Consumer Secret", required=True)
-    access_token = fields.Char(string="Access Token", required=True)
-    access_token_secret = fields.Char(string="Access Token Secret", required=True)
+    host = fields.Char(string="Host", help="Integration domain")
+    consumer_key = fields.Char(string="Consumer Key")
+    consumer_secret = fields.Char(string="Consumer Secret")
+    access_token = fields.Char(string="Access Token")
+    access_token_secret = fields.Char(string="Access Token Secret")
     mapping_payment_ids = fields.One2many('magento.payment.mapping', 'mag_config_id', string='Payment Mapping')
-    default_payment_method = fields.Char(string="Payment Method", required=True)
+    default_payment_method = fields.Char(string="Payment Method")
     mapping_shipping_ids = fields.One2many('magento.shipping.mapping', 'mag_config_id', string='Shipping Mapping')
-    default_shipping_method_code = fields.Char(string="Shipping Method Code", required=True)
-    default_shipping_carrier_code = fields.Char(string="Shipping Carrier Code", required=True)
+    default_shipping_method_code = fields.Char(string="Shipping Method Code")
+    default_shipping_carrier_code = fields.Char(string="Shipping Carrier Code")
 
 
 class MagentoPaymentMapping(models.Model):

@@ -10,16 +10,16 @@
                     <sheet>
                         <group name="group_1">
                             <group name="credentials" string="Credentials">
-                                <field name="host"/>
-                                <field name="consumer_key"/>
-                                <field name="consumer_secret"/>
-                                <field name="access_token"/>
-                                <field name="access_token_secret"/>
+                                <field name="host" required="1"/>
+                                <field name="consumer_key" required="1"/>
+                                <field name="consumer_secret" required="1"/>
+                                <field name="access_token" required="1"/>
+                                <field name="access_token_secret" required="1"/>
                             </group>
                             <group name="defaults" string="Default Settings">
-                                <field name="default_payment_method"/>
-                                <field name="default_shipping_method_code"/>
-                                <field name="default_shipping_carrier_code"/>
+                                <field name="default_payment_method" required="1"/>
+                                <field name="default_shipping_method_code" required="1"/>
+                                <field name="default_shipping_carrier_code" required="1"/>
                             </group>
                         </group>
                         <!--<group name="payment_mapping" string="Payment Mapping">-->
