@@ -58,9 +58,10 @@ class SaleOrder(models.Model):
         :return:
         """
         if self.mag_id:
-            msg = f"Skip to create new order in Magento."
+            self.mag_update_order()
+            msg = f"Update existed order in Magento."
             _logger.error(msg)
-            self.message_post(subject='Magento Integration ERROR', body=msg,
+            self.message_post(subject='Magento Integration', body=msg,
                               message_type='notification')
             return False
         try:
@@ -122,10 +123,7 @@ class SaleOrder(models.Model):
             if mag_order_id:
                 self.mag_id = mag_order_id
                 # Update Shipping Price
-                shipping = self.order_line.filtered(lambda r: r.is_delivery is True)
-                if shipping:
-                    shipping_price = shipping[0].price_subtotal
-                    api_connector.update_shipping_price(self, shipping_price)
+                self.mag_update_shipping_price(api_connector)
                 # Update Item IDs
                 res_order_items = api_connector.get_order_items_by_id(mag_order_id)
                 if res_order_items.get('items'):
@@ -143,3 +141,34 @@ class SaleOrder(models.Model):
             _logger.exception(error_msg)
             self.message_post(subject=title, body=error_msg, message_type='notification')
             return self.mag_raise_integration_error(error_msg)
+
+    def mag_update_order(self):
+        """
+        Update Existed in Magento Order
+        :return:
+        """
+        api_connector = MagentoAPI(self)
+
+        # Update Cart Items
+        lines_to_update = self.order_line.filtered(lambda l: l.is_delivery is False)
+        for line in lines_to_update:
+            if line.mag_id:
+                api_connector.update_order_item(line)
+            else:
+                mag_id = api_connector.update_order_item_post(line)
+                line.write({'mag_id': mag_id})
+
+        # Update Shipping Price
+        self.mag_update_shipping_price(api_connector)
+
+    def mag_update_shipping_price(self, api_connector):
+        """
+        Update Shipping Cost in Magento
+        :param api_connector: connector object
+        :return:
+        """
+        shipping = self.order_line.filtered(lambda r: r.is_delivery is True)
+        if shipping:
+            shipping_price = shipping[0].price_subtotal
+            api_connector.update_shipping_price(self, shipping_price)
+

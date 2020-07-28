@@ -315,6 +315,72 @@ class MagentoAPI(object):
         response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
         return self.process_response(response, invoice)
 
+    def update_order_item(self, order_line):
+        """
+        Update Existed Order Item
+        :param order_line: Sale Order Line
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/V1/order/{order_line.order_id.mag_id}/updateorderitem'
+        _logger.info(f'API Call URL: {url}')
+        payload = {
+            "order_id": order_line.order_id.mag_id,
+            "item": {
+                order_line.mag_id: {
+                    "item_id": order_line.mag_id,
+                    "item_type": "order",
+                    "price": order_line.price_unit,
+                    "fact_qty": order_line.product_uom_qty,
+                    "subtotal": order_line.price_subtotal
+                }
+            }
+        }
+        response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response, order_line.order_id)
+
+    def update_order_item_post(self, order_line):
+        """
+        Create New Order Item
+        :param order_line: Sale Order Line
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/V1/order/{order_line.order_id.mag_id}/updateorderitem'
+        _logger.info(f'API Call URL: {url}')
+        payload = {
+            "order_id": order_line.order_id.mag_id,
+            "item": {
+                order_line.product_id.default_code: {
+                    "price": order_line.price_unit,
+                    "fact_qty": order_line.product_uom_qty,
+                    "subtotal": order_line.price_subtotal
+                }
+            }
+        }
+        response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response, order_line.order_id)
+
+    def remove_order_item(self, order, mag_id):
+        """
+        Remove Order Item
+        :param order: Sale Order
+        :param mag_id: Sale Order Line Magento ID
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/V1/order/{order.mag_id}/updateorderitem'
+        _logger.info(f'API Call URL: {url}')
+        payload = {
+            "order_id": order.mag_id,
+            "item": {
+                mag_id: {
+                    "item_id": mag_id,
+                    "item_type": "order",
+                    "action": "remove"
+                }
+            }
+        }
+        response = requests.delete(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response, order)
+
     """
     Helpers
     """

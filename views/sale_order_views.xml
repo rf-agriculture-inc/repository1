@@ -6,6 +6,9 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+                <header>
+                    <button name="mag_update_order" string="TEST" type="object"/>
+                </header>
                 <xpath expr="//field[@name='partner_id']" position="before">
                     <field name="magento_bridge" invisible="1"/>
                     <field name="mag_id" attrs="{'invisible': [('mag_id', 'in', [False, 0])]}"/>
