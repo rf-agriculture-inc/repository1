@@ -171,4 +171,6 @@ class SaleOrder(models.Model):
         if shipping:
             shipping_price = shipping[0].price_subtotal
             api_connector.update_shipping_price(self, shipping_price)
+        else:
+            api_connector.update_shipping_price(self, 0)
 
