@@ -36,7 +36,7 @@ class AccountMove(models.Model):
                         try:
                             mag_id = int(res)
                             self.mag_id = f"{self.mag_id},{mag_id}" if self.mag_id else mag_id
-                            msg = f'Invoice sent to Magento. Magento Order ID: {mag_id}'
+                            msg = f'Invoice sent to Magento. Magento Invoice ID: {mag_id}'
                             self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
                         except Exception as e:
                             _logger.error(e)
