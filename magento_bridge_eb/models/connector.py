@@ -331,7 +331,7 @@ class MagentoAPI(object):
                     "item_type": "order",
                     "price": order_line.price_unit,
                     "fact_qty": order_line.product_uom_qty,
-                    "subtotal": order_line.price_subtotal
+                    "subtotal": order_line.price_subtotal,
                 }
             }
         }

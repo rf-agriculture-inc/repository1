@@ -18,7 +18,12 @@ class SaleOrderLine(models.Model):
                 new_id.order_id.mag_update_shipping_price(api_connector)
             else:
                 mag_id = api_connector.update_order_item_post(new_id)
-                new_id.write({'mag_id': mag_id})
+                try:
+                    new_id.write({'mag_id': mag_id})
+                except Exception as e:
+                    error_msg = f'{e}. Requested product: {new_id.product_id.display_name}'
+                    _logger.error(error_msg)
+                    new_id.order_id.message_post(subject='Magento Integration ERROR', body=error_msg, message_type='notification')
         return new_id
 
     def write(self, vals):
