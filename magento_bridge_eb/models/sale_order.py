@@ -95,14 +95,14 @@ class SaleOrder(models.Model):
                 raise ValidationError(error_msg)
 
             # Add items to that cart
+            additional_update = False
             order_lines = self.order_line.filtered(lambda r: r.product_id.type != 'service')
             for line in order_lines:
-                if not line.mag_id or line.mag_id == 0:
+                if (not line.mag_id or line.mag_id == 0) and (not line.mag_quote_id or line.mag_quote_id == 0):
                     cart_item = api_connector.add_carts_items(quote_id, line)
                     if cart_item:
                         line.write({'mag_quote_id': cart_item['item_id']})
                         api_connector.update_cart_item(line)
-
                         if line.product_uom_qty != cart_item['qty']:
                             error_msg = f"Magento Integration ERROR: Order line with {line.product_id.display_name} " \
                                 f"has different values in Magento: Quantity: {cart_item['qty']}"
@@ -114,6 +114,8 @@ class SaleOrder(models.Model):
                             f"synchronized with Magento."
                         _logger.error(error_msg)
                         self.message_post(subject='Magento Integration ERROR', body=error_msg, message_type='notification')
+                else:
+                    additional_update = True
 
             # Add shipping and billing info
             api_connector.add_ship_bill_info(quote_id, self)
@@ -134,6 +136,11 @@ class SaleOrder(models.Model):
                 msg = f'Order sent to Magento. Magento Order ID: {mag_order_id}'
                 self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
                 _logger.info(msg)
+
+                # If order creation in Magento was interrupted and user confirm order second time we need to update
+                # existed cart instead of raise quantity
+                if additional_update:
+                    self.mag_update_order()
 
         except Exception as e:
             title = 'Magento Integration ERROR'

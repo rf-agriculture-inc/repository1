@@ -287,7 +287,7 @@ class MagentoAPI(object):
         payload = {
             "comment": {
               "comment": picking.carrier_id.name,
-              "is_visible_on_front": 1,
+              "is_visible_on_front": 0,
             },
             "items": items,
             "tracks": [{
