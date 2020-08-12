@@ -37,14 +37,19 @@ class SaleOrderLine(models.Model):
         return update_rec
 
     def unlink(self):
-        order = self.order_id
-        mag_id = self.mag_id
-        is_delivery = self.is_delivery
+        to_remove_arr = []
+        for sol in self:
+            to_remove_arr.append({
+                'order_id': sol.order_id,
+                'mag_id': sol.mag_id,
+                'is_delivery': sol.is_delivery,
+            })
         res = super(SaleOrderLine, self).unlink()
         if self.env.company.magento_bridge:
             api_connector = MagentoAPI(self)
-            if is_delivery:
-                order.mag_update_shipping_price(api_connector)
-            if mag_id:
-                api_connector.remove_order_item(order, mag_id)
+            for item in to_remove_arr:
+                if item['is_delivery']:
+                    item['order_id'].mag_update_shipping_price(api_connector)
+                if item['mag_id']:
+                    api_connector.remove_order_item(item['order_id'], item['mag_id'])
         return res

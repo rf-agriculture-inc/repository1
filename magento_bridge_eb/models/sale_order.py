@@ -133,6 +133,7 @@ class SaleOrder(models.Model):
                         order_line = self.order_line.filtered(lambda o: o.mag_quote_id == item['quote_item_id'])
                         if order_line:
                             order_line.mag_id = item['item_id']
+                            api_connector.update_order_item(order_line)
                 msg = f'Order sent to Magento. Magento Order ID: {mag_order_id}'
                 self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
                 _logger.info(msg)

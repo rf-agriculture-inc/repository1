@@ -243,7 +243,7 @@ class MagentoAPI(object):
 
     def update_shipping_price(self, order_id, shipping_price):
         """
-        Update Custome Shipping Price
+        Update Customer Shipping Price
         :param order_id: Order object
         :param shipping_price: Shipping Price
         :return: json - response or None
@@ -323,6 +323,7 @@ class MagentoAPI(object):
         """
         url = f'{self.config.host}/rest/V1/order/{order_line.order_id.mag_id}/updateorderitem'
         _logger.info(f'API Call URL: {url}')
+        tax_percent = sum(order_line.tax_id.mapped('amount'))
         payload = {
             "order_id": order_line.order_id.mag_id,
             "item": {
@@ -332,6 +333,10 @@ class MagentoAPI(object):
                     "price": order_line.price_unit,
                     "fact_qty": order_line.product_uom_qty,
                     "subtotal": order_line.price_subtotal,
+                    "price_incl_tax": round(order_line.price_unit * (1 + (tax_percent / 100)), 2),
+                    "subtotal_incl_tax": order_line.price_total,
+                    "tax_amount": round(order_line.price_total - order_line.price_subtotal, 2),
+                    "tax_percent": tax_percent,
                 }
             }
         }
@@ -346,13 +351,18 @@ class MagentoAPI(object):
         """
         url = f'{self.config.host}/rest/V1/order/{order_line.order_id.mag_id}/updateorderitem'
         _logger.info(f'API Call URL: {url}')
+        tax_percent = sum(order_line.tax_id.mapped('amount'))
         payload = {
             "order_id": order_line.order_id.mag_id,
             "item": {
                 order_line.product_id.default_code: {
                     "price": order_line.price_unit,
+                    "price_incl_tax": round(order_line.price_unit * (1 + (tax_percent / 100)), 2),
                     "fact_qty": order_line.product_uom_qty,
-                    "subtotal": order_line.price_subtotal
+                    "subtotal": order_line.price_subtotal,
+                    "subtotal_incl_tax": order_line.price_total,
+                    "tax_amount": round(order_line.price_total - order_line.price_subtotal, 2),
+                    "tax_percent": tax_percent,
                 }
             }
         }
