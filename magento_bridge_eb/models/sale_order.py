@@ -13,6 +13,7 @@ class SaleOrder(models.Model):
     magento_bridge = fields.Boolean(related='company_id.magento_bridge')
     mag_id = fields.Integer(string="Magento ID", readonly=True, copy=False)
     mag_quote_id = fields.Integer(string="Magento Quote ID", readonly=True, copy=False)
+    x_studio_customer_po = fields.Char()
 
     """
     Override Odoo Methods
@@ -128,6 +129,7 @@ class SaleOrder(models.Model):
                 self.mag_update_shipping_price(api_connector)
                 # Update Item IDs
                 res_order_items = api_connector.get_order_items_by_id(mag_order_id)
+                self.x_studio_customer_po = res_order_items.get('increment_id')
                 if res_order_items.get('items'):
                     for item in res_order_items.get('items'):
                         order_line = self.order_line.filtered(lambda o: o.mag_quote_id == item['quote_item_id'])
