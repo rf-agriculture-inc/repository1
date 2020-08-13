@@ -244,18 +244,15 @@ class MagentoAPI(object):
         response = requests.put(url, headers=self.get_header())
         return self.process_response(response, line.order_id)
 
-    def update_shipping_price(self, order_id, shipping_price):
+    def update_shipping_price(self, order_id, payload):
         """
         Update Customer Shipping Price
         :param order_id: Order object
-        :param shipping_price: Shipping Price
+        :param payload: data to update
         :return: json - response or None
         """
-        url = f'{self.config.host}/rest/all/V1/order/{order_id.mag_id}/shippingprice'
-        _logger.info(f'API Call URL: {url}')
-        payload = {
-            "shippingPrice": shipping_price,
-        }
+        url = f'{self.config.host}/rest/all/V1/order/{order_id.mag_id}/addshippingprice'
+        _logger.info(f'API Call URL: {url}, payload: {payload}')
         response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
         return self.process_response(response, order_id)
 

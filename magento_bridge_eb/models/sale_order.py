@@ -178,10 +178,20 @@ class SaleOrder(models.Model):
         :return:
         """
         if self.mag_id and self.mag_id > 0:
-            shipping = self.order_line.filtered(lambda r: r.is_delivery is True)
-            if shipping:
-                shipping_price = shipping[0].price_subtotal
-                api_connector.update_shipping_price(self, shipping_price)
+            shipping_method_code, shipping_carrier_code = api_connector.get_shipping_codes(self)
+            payload = {
+                "shipping_method": shipping_method_code,
+                "order_id": self.mag_id,
+            }
+            shipping_line = self.order_line.filtered(lambda r: r.is_delivery is True)
+            if shipping_line:
+                payload['price_excl_tax'] = shipping_line[0].price_subtotal
+                payload['price_incl_tax'] = shipping_line[0].price_total
+                payload['tax_percent'] = sum(shipping_line[0].tax_id.mapped('amount'))
+                payload['description'] = shipping_line.name
+                api_connector.update_shipping_price(self, payload)
             else:
-                api_connector.update_shipping_price(self, 0)
-
+                payload['price_excl_tax'] = 0
+                payload['price_incl_tax'] = 0
+                payload['tax_percent'] = 0
+                api_connector.update_shipping_price(self, payload)
