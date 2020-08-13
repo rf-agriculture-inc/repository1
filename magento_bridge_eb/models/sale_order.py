@@ -177,10 +177,11 @@ class SaleOrder(models.Model):
         :param api_connector: connector object
         :return:
         """
-        shipping = self.order_line.filtered(lambda r: r.is_delivery is True)
-        if shipping:
-            shipping_price = shipping[0].price_subtotal
-            api_connector.update_shipping_price(self, shipping_price)
-        else:
-            api_connector.update_shipping_price(self, 0)
+        if self.mag_id and self.mag_id > 0:
+            shipping = self.order_line.filtered(lambda r: r.is_delivery is True)
+            if shipping:
+                shipping_price = shipping[0].price_subtotal
+                api_connector.update_shipping_price(self, shipping_price)
+            else:
+                api_connector.update_shipping_price(self, 0)
 
