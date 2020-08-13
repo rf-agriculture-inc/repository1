@@ -20,6 +20,8 @@
                                 <field name="default_payment_method" required="1"/>
                                 <field name="default_shipping_method_code" required="1"/>
                                 <field name="default_shipping_carrier_code" required="1"/>
+                                <field name="update_product_price"/>
+                                <field name="wholesale_customer_group_id"/>
                             </group>
                         </group>
                         <!--<group name="payment_mapping" string="Payment Mapping">-->

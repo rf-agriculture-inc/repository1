@@ -29,6 +29,8 @@ class MagentoConfig(models.Model):
     mapping_shipping_ids = fields.One2many('magento.shipping.mapping', 'mag_config_id', string='Shipping Mapping')
     default_shipping_method_code = fields.Char(string="Shipping Method Code")
     default_shipping_carrier_code = fields.Char(string="Shipping Carrier Code")
+    update_product_price = fields.Boolean(string="Update Product Prices", default=False)
+    wholesale_customer_group_id = fields.Char(string="Wholesale Customer Group ID", default="2")
 
 
 class MagentoPaymentMapping(models.Model):
