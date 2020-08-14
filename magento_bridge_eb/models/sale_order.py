@@ -95,6 +95,21 @@ class SaleOrder(models.Model):
                     f"Magento Quote ID is {quote_id}"
                 raise ValidationError(error_msg)
 
+            # list all items in cart
+            cart_items = api_connector.get_cart_items(quote_id)
+            _logger.info(f"Cart Items to delete: {cart_items}")
+            items_to_re_add = []
+            for item in cart_items:
+                payload = {
+                    "cartItem": {
+                        "sku": item['sku'],
+                        "qty": item['qty'],
+                        "price": item['price'],
+                    }
+                }
+                items_to_re_add.append(payload)
+                api_connector.remove_cart_item(quote_id, item['item_id'])
+
             # Add items to that cart
             additional_update = False
             order_lines = self.order_line.filtered(lambda r: r.product_id.type != 'service')
@@ -123,6 +138,14 @@ class SaleOrder(models.Model):
 
             # Add payment info
             mag_order_id = api_connector.add_payment_info(quote_id, self)
+
+            # Re-add deleted cart items
+            new_quote_id = api_connector.create_customers_cart(self.partner_id.mag_id)
+            for payload in items_to_re_add:
+                payload['cartItem']['quote_id'] = new_quote_id
+                res = api_connector.re_add_carts_items(new_quote_id, payload)
+                api_connector.update_re_added_cart_item(new_quote_id, res['item_id'], payload['cartItem']['price'])
+
             if mag_order_id:
                 self.mag_id = mag_order_id
                 # Update Shipping Price

@@ -111,6 +111,17 @@ class MagentoAPI(object):
         response = requests.post(url, headers=self.get_header())
         return self.process_response(response)
 
+    def get_cart_items(self, quote_id):
+        """
+        Create a cart for the customer
+        :param quote_id: integer - Cart ID
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/V1/carts/{quote_id}/items'
+        _logger.info(f'API Call URL: {url}')
+        response = requests.get(url, headers=self.get_header())
+        return self.process_response(response)
+
     def add_carts_items(self, quote_id, line):
         """
         Add items to the cart
@@ -130,6 +141,30 @@ class MagentoAPI(object):
         }
         response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
         return self.process_response(response, line.order_id)
+
+    def remove_cart_item(self, quote_id, item_id):
+        """
+        Remove Order Item
+        :param quote_id: Cart ID
+        :param item_id: Item ID
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/V1/carts/{quote_id}/items/{item_id}'
+        _logger.info(f'API Call URL: {url}')
+        response = requests.delete(url, headers=self.get_header())
+        return self.process_response(response)
+
+    def re_add_carts_items(self, quote_id, payload):
+        """
+        Add items to the cart
+        :param quote_id: Magento Quotation ID
+        :param payload: request payload
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/V1/carts/{quote_id}/items'
+        _logger.info(f'API Call URL: {url}')
+        response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response)
 
     def add_ship_bill_info(self, quote_id, order):
         """
@@ -243,6 +278,19 @@ class MagentoAPI(object):
         _logger.info(f'API Call URL: {url}')
         response = requests.put(url, headers=self.get_header())
         return self.process_response(response, line.order_id)
+
+    def update_re_added_cart_item(self, quote_id, item_id, price):
+        """
+        Update Order Line Price Unit in Magento
+        :param quote_id: Cart ID
+        :param item_id: Item ID
+        :param price: New price
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/V1/carts/updateCartItem/{quote_id}/{item_id}/{price}'
+        _logger.info(f'API Call URL: {url}')
+        response = requests.put(url, headers=self.get_header())
+        return self.process_response(response)
 
     def update_shipping_price(self, order_id, payload):
         """
