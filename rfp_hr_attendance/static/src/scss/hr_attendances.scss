@@ -7,3 +7,13 @@
             color: $o-brand-primary;
         }
     }
+
+#oe_hr_attendance_status {
+    color: $o-brand-secondary;
+    &.oe_hr_attendance_status_blue {
+        color: theme-color('secondary');
+    }
+    &.oe_hr_attendance_status_orange {
+        color: theme-color('warning');
+    }
+}

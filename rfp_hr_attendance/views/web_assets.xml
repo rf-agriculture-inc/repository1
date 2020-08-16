@@ -3,7 +3,8 @@
 
     <template id="assets_backend" name="rfp_hr_attendance assets" inherit_id="web.assets_backend">
         <xpath expr="//script[last()]" position="after">
-            <script type="text/javascript" src="/rfp_hr_attendance/static/src/js/kiosk_punch_type.js"/>
+            <script type="text/javascript" src="/rfp_hr_attendance/static/src/js/kiosk_confirm.js"/>
+            <script type="text/javascript" src="/rfp_hr_attendance/static/src/js/my_attendances.js"/>
         </xpath>
         <xpath expr="//link[last()]" position="after">
             <link rel="stylesheet" type="text/scss" href="/rfp_hr_attendance/static/src/scss/hr_attendances.scss"/>
