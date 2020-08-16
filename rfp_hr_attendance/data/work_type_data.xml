@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="work_entry_type_lunch" model="hr.work.entry.type">
+        <field name="name">Lunch</field>
+        <field name="code">LUNCH</field>
+    </record>
+    <record id="work_entry_type_break" model="hr.work.entry.type">
+        <field name="name">Break</field>
+        <field name="code">BREAK</field>
+    </record>
+
+</odoo>

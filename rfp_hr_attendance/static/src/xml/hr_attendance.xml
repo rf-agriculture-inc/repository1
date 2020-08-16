@@ -5,6 +5,7 @@
 
             <div class="o_hr_attendance_kiosk_mode">
                 <t t-set="checked_in" t-value="widget.employee.attendance_state=='checked_in'"/>
+                <t t-set="checked_out" t-value="widget.employee.attendance_state=='checked_out'"/>
                 <t t-if="widget.employee">
                     <div class="o_hr_attendance_user_badge o_home_menu_background">
                         <img class="img rounded-circle"
@@ -19,40 +20,34 @@
                     <div class="container">
                         <div class="row">
 
-                            <div id="kiosk_action_container" class="col-md-12" t-if="!checked_in">
+                            <div id="kiosk_action_container" class="col-md-12" t-if="checked_out">
+                                <!-- START WORKING [general] -->
+                                <a class="btn btn-block btn-secondary o_hr_attendance_punch_type mt-2 mb-2 o_hr_attendance_sign_in_out_icon"
+                                   aria-label="Sign in" title="Sign in" data-punch-type="general">
+                                    <i class="fa fa-sign-in fa-1x mr-1 mt-3 mb-3"> </i>
+                                    <span>Start Work</span>
+                                </a>
+
                                 <!-- START LUNCH [lunch] -->
-                                <a class="btn btn-secondary o_hr_attendance_punch_type btn-block mt-2 mb-2 "
-                                   t-if="!checked_in" aria-label="Start Lunch" data-punch-type="lunch"
-                                   title="Start Lunch">
+                                <a class="btn btn-secondary o_hr_attendance_punch_type_lunch btn-block mt-2 mb-2"
+                                   aria-label="Start Lunch" title="Start Lunch">
                                     <i class="fa fa-1x fa-coffee mr-1 mt-3 mb-3"> </i>
                                     <span>Start Lunch</span></a>
 
                                 <!-- START BREAK [break] -->
-                                <a class="btn btn-secondary o_hr_attendance_punch_type btn-block mt-2 mb-2  "
-                                   t-if="!checked_in" aria-label="Start Break" data-punch-type="break"
-                                   title="Take Break">
+                                <a class="btn btn-secondary o_hr_attendance_punch_type_break btn-block mt-2 mb-2"
+                                   aria-label="Start Break" title="Take Break">
                                     <i class="fa fa-1x fa-hourglass-1 mr-1 mt-3 mb-3"> </i>
                                     <span>Start Break</span></a>
-
-                                <!-- START WORKING [general] -->
-                                <a class="btn btn-block btn-secondary o_hr_attendance_punch_type mt-2 mb-2 "
-                                   t-if="!checked_in" aria-label="Sign in" title="Sign in" data-punch-type="general">
-                                    <i class="fa fa-sign-in fa-1x mr-1 mt-3 mb-3"> </i>
-                                    <span>Start Work</span>
-                                </a>
                             </div>
 
-                            <div id="kiosk_action_container" class="col-md-12 kiosk_action_container" t-if="checked_in">
+                            <div id="kiosk_action_container" class="col-md-12 kiosk_action_container" t-if="!checked_out">
                                 <!-- SIGN OUT OF CURRENT PUNCH TYPES -->
                                 <a class="btn btn-secondary btn-block btn-warning o_hr_attendance_sign_in_out_icon"
-                                   t-if="checked_in" aria-label="Sign out" title="Sign out">
+                                   aria-label="Sign out" title="Sign out">
                                     <i class="fa fa-1x fa-sign-out mr-1 mt-3 mb-3"></i>
                                     <span>
                                         <b>Stop</b>
-                                        <!-- TODO: Create conditions to alter text -->
-                                        <b t-if="!checked_in"> Lunch</b>
-                                        <b t-if="!checked_in"> Break</b>
-                                        <b t-if="!checked_in"> Work</b>
                                     </span>
                                 </a>
                             </div>
@@ -67,4 +62,84 @@
 
         </t>
     </t>
+
+    <t t-extend="HrAttendanceKioskConfirm">
+        <t t-jquery=".o_hr_attendance_kiosk_mode" t-operation="replace">
+            <div class="o_hr_attendance_kiosk_mode">
+                <t t-set="checked_in" t-value="widget.employee_state=='checked_in'"/>
+                <t t-set="checked_out" t-value="widget.employee_state=='checked_out'"/>
+                <div class="o_hr_attendance_back_button">
+                    <span class="btn btn-secondary btn-lg d-block d-md-none"><i class="fa fa-chevron-left mr8"/> Go back</span>
+                    <span class="btn btn-secondary d-none d-md-inline-block"><i class="fa fa-chevron-left" role="img" aria-label="Go back" title="Go back"/></span>
+                </div>
+                <t t-if="widget.employee_id">
+                    <div class="o_hr_attendance_user_badge o_home_menu_background">
+                        <img class="img rounded-circle" t-attf-src="/web/image?model=hr.employee&amp;field=image_128&amp;id=#{widget.employee_id}" t-att-title="widget.employee_name" t-att-alt="widget.employee_name"/>
+                    </div>
+                    <h1 class="mb8"><t t-esc="widget.employee_name"/></h1>
+                    <h3 class="mt8 mb24"><t t-if="!checked_in">Welcome! TEST2</t><t t-else="">Want to check out?</t></h3>
+                    <h4 class="mt0 mb0 text-muted" t-if="checked_in">Today's work hours: <span t-esc="widget.employee_hours_today"/></h4>
+                    <t t-if="!widget.use_pin">
+                        <!-- Original buttons -->
+<!--                        <a class="fa fa-7x o_hr_attendance_sign_in_out_icon fa-sign-out btn-warning" t-if="checked_in" aria-label="Sign out" title="Sign out"/>-->
+<!--                        <a class="fa fa-7x o_hr_attendance_sign_in_out_icon fa-sign-in btn-secondary" t-if="!checked_in" aria-label="Sign in" title="Sign in"/>-->
+<!--                        <h3 class="mt0 mb0 text-muted">Click to <b t-if="checked_in">check out</b><b t-else="">check in</b></h3>-->
+                        <div id="kiosk_action_container" class="col-md-12" t-if="checked_out">
+                            <!-- START WORKING [general] -->
+                            <a class="btn btn-block btn-secondary o_hr_attendance_punch_type mt-2 mb-2 o_hr_attendance_sign_in_out_icon"
+                               aria-label="Sign in" title="Sign in" data-punch-type="general">
+                                <i class="fa fa-sign-in fa-1x mr-1 mt-3 mb-3"> </i>
+                                <span>Start Work</span>
+                            </a>
+
+                            <!-- START LUNCH [lunch] -->
+                            <a class="btn btn-secondary o_hr_attendance_punch_type_lunch btn-block mt-2 mb-2"
+                               aria-label="Start Lunch" title="Start Lunch">
+                                <i class="fa fa-1x fa-coffee mr-1 mt-3 mb-3"> </i>
+                                <span>Start Lunch</span></a>
+
+                            <!-- START BREAK [break] -->
+                            <a class="btn btn-secondary o_hr_attendance_punch_type_break btn-block mt-2 mb-2"
+                               aria-label="Start Break" title="Take Break">
+                                <i class="fa fa-1x fa-hourglass-1 mr-1 mt-3 mb-3"> </i>
+                                <span>Start Break</span></a>
+                        </div>
+
+                        <div id="kiosk_action_container" class="col-md-12 kiosk_action_container" t-if="!checked_out">
+                            <!-- SIGN OUT OF CURRENT PUNCH TYPES -->
+                            <a class="btn btn-secondary btn-block btn-warning o_hr_attendance_sign_in_out_icon"
+                               aria-label="Sign out" title="Sign out">
+                                <i class="fa fa-1x fa-sign-out mr-1 mt-3 mb-3"></i>
+                                <span>
+                                    <b>Stop</b>
+                                </span>
+                            </a>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <h3 class="mt0 mb0 text-muted">Please enter your PIN to <b t-if="checked_in">check out</b><b t-else="">check in</b></h3>
+                        <div class="row">
+                            <div class="col-md-8 offset-md-2 o_hr_attendance_pin_pad">
+                                <div class="row" >
+                                    <div class="col-12 mb8 mt8"><input class="o_hr_attendance_PINbox text-center" type="password" disabled="true"/></div>
+                                </div>
+                                <div class="row">
+                                    <t t-foreach="['1', '2', '3', '4', '5', '6', '7', '8', '9', ['C', 'btn-warning'], '0', ['ok', 'btn-primary'], ['lunch', 'btn-primary'], ['break', 'btn-primary']]" t-as="btn_name">
+                                        <div class="col-4 mb4">
+                                            <a t-attf-class="btn {{btn_name[1]? btn_name[1] : 'btn-secondary'}} btn-block btn-lg {{ 'o_hr_attendance_pin_pad_button_' + btn_name[0] }}"><t t-esc="btn_name[0]"/></a>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+                <div t-else="" class="alert alert-danger" role="alert">
+                    <b>Error: could not find corresponding employee.</b><br/>Please return to the main menu.
+                </div>
+                <a role="button" class="oe_attendance_sign_in_out" aria-label="Sign out" title="Sign out"/>
+            </div>
+        </t>
+    </t>
+
 </templates>
