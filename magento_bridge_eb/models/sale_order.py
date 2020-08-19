@@ -14,6 +14,7 @@ class SaleOrder(models.Model):
     mag_id = fields.Integer(string="Magento ID", readonly=True, copy=False)
     mag_quote_id = fields.Integer(string="Magento Quote ID", readonly=True, copy=False)
     x_studio_customer_po = fields.Char()
+    customer_note = fields.Text()
 
     """
     Override Odoo Methods
@@ -152,11 +153,11 @@ class SaleOrder(models.Model):
                 self.mag_update_shipping_price(api_connector)
                 # Update Item IDs
                 res_order_items = api_connector.get_order_items_by_id(mag_order_id)
-                self.x_studio_customer_po = res_order_items.get('increment_id')
+                self.client_order_ref = res_order_items.get('increment_id')
                 if res_order_items.get('items'):
                     for item in res_order_items.get('items'):
-                        order_line = self.order_line.filtered(lambda o: o.mag_quote_id == item['quote_item_id'])
-                        if order_line:
+                        sale_order_lines = self.order_line.filtered(lambda o: o.mag_quote_id == item['quote_item_id'])
+                        for order_line in sale_order_lines:
                             order_line.mag_id = item['item_id']
                             api_connector.update_order_item(order_line)
                 msg = f'Order sent to Magento. Magento Order ID: {mag_order_id}'

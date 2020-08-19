@@ -31,12 +31,31 @@ class AccountMove(models.Model):
             for order in orders:
                 if order.mag_id:
                     api_connector = MagentoAPI(self)
-                    res = api_connector.create_invoice(self, order.mag_id)
+                    if all(o.product_uom_qty == o.qty_invoiced for o in order.order_line):
+                        payload = {
+                            "capture": True,
+                            "notify": True
+                        }
+                    else:
+                        items = []
+                        for inv_line in self.invoice_line_ids:
+                            sale_line_ids = inv_line.mapped('sale_line_ids').filtered(lambda l: l.order_id == order)
+                            for order_line in sale_line_ids:
+                                if order_line.mag_id:
+                                    qty = order_line.invoice_lines.filtered(lambda i: i == inv_line).mapped('quantity')
+                                    items.append({
+                                            "order_item_id": order_line.mag_id,
+                                            "qty": qty[0]
+                                        })
+                        payload = {"items": items}
+
+                    res = api_connector.create_invoice(self, order.mag_id, payload)
                     if res:
                         try:
                             mag_id = int(res)
                             self.mag_id = f"{self.mag_id},{mag_id}" if self.mag_id else mag_id
                             msg = f'Invoice sent to Magento. Magento Invoice ID: {mag_id}'
-                            self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
+                            self.message_post(subject='Magento Integration Success', body=msg,
+                                              message_type='notification')
                         except Exception as e:
                             _logger.error(e)

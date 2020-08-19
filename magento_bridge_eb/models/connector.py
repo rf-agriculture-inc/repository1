@@ -347,19 +347,16 @@ class MagentoAPI(object):
         response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
         return self.process_response(response, picking)
 
-    def create_invoice(self, invoice, order_id):
+    def create_invoice(self, invoice, order_id, payload):
         """
         Create Invoice for given Order
         :param invoice: Account Move Object
         :param order_id: Magento Order ID
+        :param payload: invoice data
         :return: json - response or None
         """
         url = f'{self.config.host}/rest/V1/order/{order_id}/invoice'
         _logger.info(f'API Call URL: {url}')
-        payload = {
-          "capture": True,
-          "notify": True
-        }
         response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
         return self.process_response(response, invoice)
 
