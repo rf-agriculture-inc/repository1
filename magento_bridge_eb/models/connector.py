@@ -369,6 +369,8 @@ class MagentoAPI(object):
         url = f'{self.config.host}/rest/V1/order/{order_line.order_id.mag_id}/updateorderitem'
         _logger.info(f'API Call URL: {url}')
         tax_percent = sum(order_line.tax_id.mapped('amount'))
+        price_incl_tax = round(order_line.price_unit * (1 + (tax_percent / 100)), 2)
+        discount_amount = round(price_incl_tax * order_line.discount * order_line.product_uom_qty / 100, 2) if order_line.discount > 0 else 0
         payload = {
             "order_id": order_line.order_id.mag_id,
             "item": {
@@ -378,10 +380,12 @@ class MagentoAPI(object):
                     "price": order_line.price_unit,
                     "fact_qty": order_line.product_uom_qty,
                     "subtotal": order_line.price_subtotal,
-                    "price_incl_tax": round(order_line.price_unit * (1 + (tax_percent / 100)), 2),
+                    "price_incl_tax": price_incl_tax,
                     "subtotal_incl_tax": order_line.price_total,
                     "tax_amount": round(order_line.price_total - order_line.price_subtotal, 2),
                     "tax_percent": tax_percent,
+                    "discount_amount": discount_amount,
+                    "discount_percent": order_line.discount,
                 }
             }
         }
@@ -397,6 +401,7 @@ class MagentoAPI(object):
         url = f'{self.config.host}/rest/V1/order/{order_line.order_id.mag_id}/updateorderitem'
         _logger.info(f'API Call URL: {url}')
         tax_percent = sum(order_line.tax_id.mapped('amount'))
+        discount_amount = round(order_line.price_total * order_line.discount * order_line.product_uom_qty / 100, 2) if order_line.discount > 0 else 0
         payload = {
             "order_id": order_line.order_id.mag_id,
             "item": {
@@ -408,6 +413,8 @@ class MagentoAPI(object):
                     "subtotal_incl_tax": order_line.price_total,
                     "tax_amount": round(order_line.price_total - order_line.price_subtotal, 2),
                     "tax_percent": tax_percent,
+                    "discount_amount": discount_amount,
+                    "discount_percent": order_line.discount,
                 }
             }
         }

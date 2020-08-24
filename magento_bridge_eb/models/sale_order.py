@@ -11,10 +11,12 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     magento_bridge = fields.Boolean(related='company_id.magento_bridge')
-    mag_id = fields.Integer(string="Magento ID", readonly=True, copy=False)
-    mag_quote_id = fields.Integer(string="Magento Quote ID", readonly=True, copy=False)
+    mag_id = fields.Integer(string="Magento Database ID", readonly=True, copy=False)
+    mag_quote_id = fields.Integer(string="Magento Quote (Cart) ID", readonly=True, copy=False)
     x_studio_customer_po = fields.Char()
     customer_note = fields.Text()
+    will_call = fields.Boolean(string="Will Call")
+    send_to_magento = fields.Boolean(string="Send Order to Magento", default=True)
 
     """
     Override Odoo Methods
@@ -25,7 +27,7 @@ class SaleOrder(models.Model):
         :return: super
         """
         res = super(SaleOrder, self).action_confirm()
-        if self.env.company.magento_bridge:
+        if self.env.company.magento_bridge and self.send_to_magento:
             for so in self:
                 so.mag_send_order()
         return res

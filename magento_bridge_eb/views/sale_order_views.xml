@@ -7,19 +7,23 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='partner_id']" position="before">
+                    <field name="send_to_magento"/>
+                </xpath>
+                <xpath expr="//field[@name='client_order_ref']" position="after">
                     <field name="magento_bridge" invisible="1"/>
                     <field name="mag_id" attrs="{'invisible': [('mag_id', 'in', [False, 0])]}"/>
                     <field name="mag_quote_id" attrs="{'invisible': [('mag_quote_id', 'in', [False, 0])]}"/>
-                </xpath>
-                <xpath expr="//field[@name='product_id']" position="before">
-                    <field name="mag_id" attrs="{'invisible': [('mag_id', 'in', [False, 0])]}"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="before">
                     <field name="mag_quote_id" optional="hide"/>
                     <field name="mag_id" optional="hide"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                    <field name="client_order_ref" string="Magento Order ID"/>
                     <field name="customer_note"/>
+                </xpath>
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="will_call"/>
                 </xpath>
             </field>
         </record>
