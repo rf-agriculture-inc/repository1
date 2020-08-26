@@ -202,7 +202,7 @@ class MagentoAPI(object):
             "addressInformation": {
                 "shippingAddress": {
                     "region": ship_address.state_id.name if ship_address.state_id else '',
-                    "region_id": 1,  # TODO: Check what is region_id in Magento
+                    "region_id": 1,
                     "country_id": ship_address.country_id.code if ship_address.country_id else '',
                     "street": [
                         ship_street
@@ -220,7 +220,7 @@ class MagentoAPI(object):
                 },
                 "billingAddress": {
                     "region": bill_address.state_id.name if bill_address.state_id else '',
-                    "region_id": 1,  # TODO: Check what is region_id in Magento
+                    "region_id": 1,
                     "country_id": bill_address.country_id.code if bill_address.country_id else '',
                     "street": [
                         bill_street
@@ -253,11 +253,14 @@ class MagentoAPI(object):
         url = f'{self.config.host}/rest/V1/carts/{quote_id}/order'
         _logger.info(f'API Call URL: {url}')
         # payment_method = self.get_payment_method(order)
-        payment_method = self.config.default_payment_method  # TODO: payment method mapping
+        payment_method = self.config.default_payment_method
         method_code, carrier_code = self.get_shipping_codes(order)
         payload = {
             "paymentMethod": {
-                "method": payment_method
+                "method": payment_method,
+                "AdditionalData": {
+                    "fromOdoo": "true"
+                }
             },
             "shippingMethod": {
                 "method_code": method_code,
@@ -384,7 +387,7 @@ class MagentoAPI(object):
                     "subtotal_incl_tax": order_line.price_total,
                     "tax_amount": round(order_line.price_total - order_line.price_subtotal, 2),
                     "tax_percent": tax_percent,
-                    "discount_amount": discount_amount,
+                    # "discount_amount": discount_amount,
                     "discount_percent": order_line.discount,
                 }
             }
@@ -413,7 +416,7 @@ class MagentoAPI(object):
                     "subtotal_incl_tax": order_line.price_total,
                     "tax_amount": round(order_line.price_total - order_line.price_subtotal, 2),
                     "tax_percent": tax_percent,
-                    "discount_amount": discount_amount,
+                    # "discount_amount": discount_amount,
                     "discount_percent": order_line.discount,
                 }
             }
