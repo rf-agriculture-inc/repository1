@@ -373,7 +373,15 @@ class MagentoAPI(object):
         _logger.info(f'API Call URL: {url}')
         tax_percent = sum(order_line.tax_id.mapped('amount'))
         price_incl_tax = round(order_line.price_unit * (1 + (tax_percent / 100)), 2)
-        discount_amount = round(price_incl_tax * order_line.discount * order_line.product_uom_qty / 100, 2) if order_line.discount > 0 else 0
+
+        discount_amount = round(order_line.price_unit * order_line.product_uom_qty * order_line.discount / 100, 2) if order_line.discount > 0 else 0
+        if discount_amount == 0:
+            subtotal = order_line.price_subtotal
+            subtotal_incl_tax = order_line.price_total
+        else:
+            subtotal = round(order_line.price_subtotal / (1 - order_line.discount / 100), 2)
+            subtotal_incl_tax = round(order_line.price_total / (1 - order_line.discount / 100), 2)
+
         payload = {
             "order_id": order_line.order_id.mag_id,
             "item": {
@@ -382,12 +390,14 @@ class MagentoAPI(object):
                     "item_type": "order",
                     "price": order_line.price_unit,
                     "fact_qty": order_line.product_uom_qty,
-                    "subtotal": order_line.price_subtotal,
                     "price_incl_tax": price_incl_tax,
-                    "subtotal_incl_tax": order_line.price_total,
+                    # "subtotal": order_line.price_subtotal,
+                    "subtotal": subtotal,
+                    # "subtotal_incl_tax": order_line.price_total,
+                    "subtotal_incl_tax": subtotal_incl_tax,
                     "tax_amount": round(order_line.price_total - order_line.price_subtotal, 2),
                     "tax_percent": tax_percent,
-                    # "discount_amount": discount_amount,
+                    "discount_amount": discount_amount,
                     "discount_percent": order_line.discount,
                 }
             }
@@ -404,7 +414,14 @@ class MagentoAPI(object):
         url = f'{self.config.host}/rest/V1/order/{order_line.order_id.mag_id}/updateorderitem'
         _logger.info(f'API Call URL: {url}')
         tax_percent = sum(order_line.tax_id.mapped('amount'))
-        discount_amount = round(order_line.price_total * order_line.discount * order_line.product_uom_qty / 100, 2) if order_line.discount > 0 else 0
+        discount_amount = round(order_line.price_unit * order_line.product_uom_qty * order_line.discount / 100, 2) if order_line.discount > 0 else 0
+        if discount_amount == 0:
+            subtotal = order_line.price_subtotal
+            subtotal_incl_tax = order_line.price_total
+        else:
+            subtotal = round(order_line.price_subtotal / (1 - order_line.discount / 100), 2)
+            subtotal_incl_tax = round(order_line.price_total / (1 - order_line.discount / 100), 2)
+
         payload = {
             "order_id": order_line.order_id.mag_id,
             "item": {
@@ -412,11 +429,13 @@ class MagentoAPI(object):
                     "price": order_line.price_unit,
                     "price_incl_tax": round(order_line.price_unit * (1 + (tax_percent / 100)), 2),
                     "fact_qty": order_line.product_uom_qty,
-                    "subtotal": order_line.price_subtotal,
-                    "subtotal_incl_tax": order_line.price_total,
+                    # "subtotal": order_line.price_subtotal,
+                    "subtotal": subtotal,
+                    # "subtotal_incl_tax": order_line.price_total,
+                    "subtotal_incl_tax": subtotal_incl_tax,
                     "tax_amount": round(order_line.price_total - order_line.price_subtotal, 2),
                     "tax_percent": tax_percent,
-                    # "discount_amount": discount_amount,
+                    "discount_amount": discount_amount,
                     "discount_percent": order_line.discount,
                 }
             }
