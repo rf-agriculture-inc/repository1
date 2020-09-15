@@ -221,3 +221,17 @@ class SaleOrder(models.Model):
                 payload['price_incl_tax'] = 0
                 payload['tax_percent'] = 0
                 api_connector.update_shipping_price(self, payload)
+
+    def test(self):
+        print('success')
+
+        payload = {
+                  "product": {
+                    "sku": "ODOO-001",
+                    "name": "Champ Tee Small",
+                    "price": 25,
+                  }
+                }
+        # Init Connection
+        api_connector = MagentoAPI(self)
+        api_connector.create_new_product(payload)

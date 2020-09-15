@@ -6,6 +6,9 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+                <header>
+                    <button type="object" name="test" string="TEST"/>
+                </header>
                 <xpath expr="//field[@name='partner_id']" position="before">
                     <field name="send_to_magento"/>
                 </xpath>

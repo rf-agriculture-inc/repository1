@@ -480,6 +480,18 @@ class MagentoAPI(object):
         response = requests.post(url, headers=self.get_header())
         return self.process_response(response, product)
 
+    def create_new_product(self, payload):
+        """
+        Create New Product
+        :param payload: product data
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/default/V1/products'
+        _logger.info(f'API Call URL: {url}')
+        response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
+        print(response.text)
+        return self.process_response(response)
+
     """
     Helpers
     """
