@@ -174,7 +174,6 @@ class MagentoAPI(object):
         :return: json - response or None
         """
         url = f'{self.config.host}/rest/V1/carts/{quote_id}/shipping-information'
-        _logger.info(f'API Call URL: {url}')
 
         # Prepare payload
         ship_address = order.partner_shipping_id
@@ -240,6 +239,7 @@ class MagentoAPI(object):
             }
         }
 
+        _logger.info(f'API Call URL: {url}\nPayload: {payload}')
         response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
         return self.process_response(response, order)
 
@@ -325,7 +325,6 @@ class MagentoAPI(object):
         :return: json - response or None
         """
         url = f'{self.config.host}/rest/V1/order/{picking.sale_id.mag_id}/ship'
-        _logger.info(f'API Call URL: {url}')
         items = []
         for move_line_id in picking.move_line_ids:
             order_item_id = move_line_id.move_id.sale_line_id.mag_id
@@ -335,18 +334,26 @@ class MagentoAPI(object):
                 "qty": qty,
             })
         method_code, carrier_code = self.get_shipping_codes(picking.sale_id)
-        payload = {
-            "comment": {
-              "comment": picking.carrier_id.name,
-              "is_visible_on_front": 0,
-            },
-            "items": items,
-            "tracks": [{
-                "carrier_code": carrier_code,
-                "title": picking.carrier_id.name,
-                "track_number": picking.carrier_tracking_ref,
-            }]
-        }
+
+        if picking.carrier_tracking_ref:
+            payload = {
+                "comment": {
+                  "comment": picking.carrier_id.name,
+                  "is_visible_on_front": 0,
+                },
+                "items": items,
+                "tracks": [{
+                    "carrier_code": carrier_code,
+                    "title": picking.carrier_id.name,
+                    "track_number": picking.carrier_tracking_ref,
+                }]
+            }
+        else:
+            payload = {
+                "items": items,
+            }
+
+        _logger.info(f'API Call URL: {url}\nPayload: {payload}')
         response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
         return self.process_response(response, picking)
 

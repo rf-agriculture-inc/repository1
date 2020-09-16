@@ -5,6 +5,11 @@
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
+                <header>
+                    <field name="sale_id" invisible="1"/>
+                    <button type="object" name="mag_send_shipment" string="Create Shipment in Magento"
+                            attrs="{'invisible': ['|','|', ('mag_id', '>', 0), ('sale_id', '=', False), ('picking_type_code', '=', 'internal')]}"/>
+                </header>
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="mag_id" attrs="{'invisible': [('mag_id', '=', False)]}"/>
                 </xpath>

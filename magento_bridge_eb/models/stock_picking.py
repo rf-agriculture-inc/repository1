@@ -14,7 +14,7 @@ class StockPicking(models.Model):
     def action_done(self):
         """Send Shipped Items to Magento"""
         res = super(StockPicking, self).action_done()
-        if self.env.company.magento_bridge and self.carrier_tracking_ref:
+        if self.env.company.magento_bridge:
             self.mag_send_shipment()
         return res
 
