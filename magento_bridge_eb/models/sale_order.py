@@ -23,10 +23,19 @@ class SaleOrder(models.Model):
     """
     def action_confirm(self):
         """
-        Send/Create Order in Magento if Magento Bridge activated
+        Send/Create Order in Magento if Magento Bridge activated / Validate routes
         :return: super
         """
+        # Validate routes
+        order_lines = self.order_line
+        for line in order_lines:
+            if line.check_route_required() and not line.route_id:
+                raise UserError(f"Choose Routes for each Storable Product.")
+
+        # Confirm Order
         res = super(SaleOrder, self).action_confirm()
+
+        # Magento Call
         if self.env.company.magento_bridge and self.send_to_magento:
             for so in self:
                 so.mag_send_order()

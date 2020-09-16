@@ -9,6 +9,9 @@ _logger = logging.getLogger(__name__)
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
+    """
+    Overrided Methods
+    """
     @api.model
     def create(self, vals):
         new_id = super(SaleOrderLine, self).create(vals)
@@ -53,3 +56,15 @@ class SaleOrderLine(models.Model):
                 if item['mag_id']:
                     api_connector.remove_order_item(item['order_id'], item['mag_id'])
         return res
+
+    """
+    Custom Logic
+    """
+    def check_route_required(self):
+        """
+        Check if route is required on order line
+        :return: True if required
+        """
+        for line in self:
+            if line.product_id.type == 'product':
+                return True

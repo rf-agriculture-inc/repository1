@@ -35,7 +35,7 @@
                         <group name="shipping_mapping" string="Shipping Mapping">
                             <field name="mapping_shipping_ids" nolabel="1" context="{'default_mag_config_id':id}">
                                 <tree editable="top">
-                                    <field name="carrier_id"/>
+                                    <field name="carrier_id" required="1"/>
                                     <field name="mag_shipping_method_code"/>
                                     <field name="mag_shipping_carrier_code"/>
                                 </tree>
