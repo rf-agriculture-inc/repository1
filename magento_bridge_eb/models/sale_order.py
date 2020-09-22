@@ -41,6 +41,20 @@ class SaleOrder(models.Model):
                 so.mag_send_order()
         return res
 
+    def action_cancel(self):
+        """
+        Cancel Order in Magento if Magento Bridge activated
+        :return: super
+        """
+        # Cancel Order
+        res = super(SaleOrder, self).action_cancel()
+
+        # Magento Call
+        if self.env.company.magento_bridge and self.mag_id:
+            for so in self:
+                so.mag_cancel_order()
+        return res
+
     """
        Magento Synchronization
     """
@@ -205,6 +219,14 @@ class SaleOrder(models.Model):
 
         # Update Shipping Price
         self.mag_update_shipping_price(api_connector)
+
+    def mag_cancel_order(self):
+        """
+        Cancel Order in Magento Order
+        :return:
+        """
+        api_connector = MagentoAPI(self)
+        api_connector.cancel_order(self)
 
     def mag_update_shipping_price(self, api_connector):
         """

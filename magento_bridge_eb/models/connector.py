@@ -472,6 +472,17 @@ class MagentoAPI(object):
         response = requests.delete(url, headers=self.get_header(), data=json.dumps(payload))
         return self.process_response(response, order)
 
+    def cancel_order(self, order):
+        """
+        Remove Order Item
+        :param order: Sale Order
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/V1/orders/{order.mag_id}/cancel'
+        _logger.info(f'API Call URL: {url}')
+        response = requests.post(url, headers=self.get_header())
+        return self.process_response(response, order)
+
     """
     PRODUCTS
     """
