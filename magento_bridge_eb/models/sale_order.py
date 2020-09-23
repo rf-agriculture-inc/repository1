@@ -138,7 +138,7 @@ class SaleOrder(models.Model):
 
             # Add items to that cart
             additional_update = False
-            order_lines = self.order_line.filtered(lambda r: r.product_id.type != 'service')
+            order_lines = self.order_line.filtered(lambda r: r.is_delivery is False)
             for line in order_lines:
                 if (not line.mag_id or line.mag_id == 0) and (not line.mag_quote_id or line.mag_quote_id == 0):
                     cart_item = api_connector.add_carts_items(quote_id, line)
