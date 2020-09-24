@@ -16,12 +16,14 @@ class SaleOrder(models.Model):
     x_studio_customer_po = fields.Char()
     customer_note = fields.Text()
     will_call = fields.Boolean(string="Will Call")
-    send_to_magento = fields.Boolean(string="Send Order to Magento", default=True, states={'sale': [('readonly', True)]},
+    send_to_magento = fields.Boolean(string="Send Order to Magento", default=True,
+                                     states={'sale': [('readonly', True)]},
                                      help="Send Order to Magento on Confirm action. Readonly for confirmed orders.")
 
     """
     Override Odoo Methods
     """
+
     def action_confirm(self):
         """
         Send/Create Order in Magento if Magento Bridge activated / Validate routes
@@ -59,6 +61,7 @@ class SaleOrder(models.Model):
     """
        Magento Synchronization
     """
+
     @staticmethod
     def mag_raise_integration_error(msg):
         """
@@ -102,24 +105,28 @@ class SaleOrder(models.Model):
                 # Create a cart for the customer
                 if not self.partner_id.mag_id or self.partner_id.mag_id == 0:
                     if self.partner_id.email:
-                        res = api_connector.get_customer_id_by_email(self.partner_id.email)
+                        email_arr = self.partner_id.email.replace(' ', '').split(';')
+                        res = False
+                        for email in email_arr:
+                            res = api_connector.get_customer_id_by_email(email)
+                            if res and len(res['items']) > 0: break
                         if res and len(res['items']) > 0:
                             mag_customer_id = res['items'][0]['id']
                             self.partner_id.write({'mag_id': mag_customer_id})
                         else:
                             error_msg = f"Failed to synchronize Sale Order {self.name} with Magento. " \
-                                f"Customer {self.partner_id.name} does not exist in Magento."
+                                        f"Customer {self.partner_id.name} does not exist in Magento."
                             raise ValidationError(error_msg)
                     else:
                         error_msg = f"Failed to synchronize Sale Order {self.name} with Magento. " \
-                            f"Customer {self.partner_id.name} has no Magento ID."
+                                    f"Customer {self.partner_id.name} has no Magento ID."
                         raise ValidationError(error_msg)
                 quote_id = api_connector.create_customers_cart(self.partner_id.mag_id)
                 self.mag_quote_id = quote_id
 
             if not quote_id:
                 error_msg = f"Failed to synchronize Sale Order {self.name} with Magento. " \
-                    f"Magento Quote ID is {quote_id}"
+                            f"Magento Quote ID is {quote_id}"
                 raise ValidationError(error_msg)
 
             # list all items in cart
@@ -148,15 +155,16 @@ class SaleOrder(models.Model):
                         api_connector.update_cart_item(line)
                         if line.product_uom_qty != cart_item['qty']:
                             error_msg = f"Magento Integration ERROR: Order line with {line.product_id.display_name} " \
-                                f"has different values in Magento: Quantity: {cart_item['qty']}"
+                                        f"has different values in Magento: Quantity: {cart_item['qty']}"
                             _logger.error(error_msg)
                             self.message_post(subject='Magento Integration ERROR', body=error_msg,
                                               message_type='notification')
                     else:
                         error_msg = f"Magento Integration ERROR: Order line with {line.product_id.display_name} wasn't " \
-                            f"synchronized with Magento."
+                                    f"synchronized with Magento."
                         _logger.error(error_msg)
-                        self.message_post(subject='Magento Integration ERROR', body=error_msg, message_type='notification')
+                        self.message_post(subject='Magento Integration ERROR', body=error_msg,
+                                          message_type='notification')
                 else:
                     additional_update = True
 
