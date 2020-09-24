@@ -16,7 +16,8 @@ class SaleOrder(models.Model):
     x_studio_customer_po = fields.Char()
     customer_note = fields.Text()
     will_call = fields.Boolean(string="Will Call")
-    send_to_magento = fields.Boolean(string="Send Order to Magento", default=True)
+    send_to_magento = fields.Boolean(string="Send Order to Magento", default=True, states={'sale': [('readonly', True)]},
+                                     help="Send Order to Magento on Confirm action. Readonly for confirmed orders.")
 
     """
     Override Odoo Methods
