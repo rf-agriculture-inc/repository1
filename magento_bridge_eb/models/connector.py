@@ -140,7 +140,20 @@ class MagentoAPI(object):
             }
         }
         response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
-        return self.process_response(response, line.order_id)
+        if response.status_code == 404:
+            payload = {
+                "product": {
+                    "sku": line.product_id.default_code,
+                    "name": line.product_id.display_name,
+                    "price": line.price_unit,
+                    "attribute_set_id": self.config.attribute_set_id,
+                }
+            }
+            new_product_res = self.create_new_product(payload)
+            if new_product_res.get('id'):
+                return self.add_carts_items(quote_id, line)
+        else:
+            return self.process_response(response, line.order_id)
 
     def remove_cart_item(self, quote_id, item_id):
         """
@@ -497,6 +510,17 @@ class MagentoAPI(object):
         _logger.info(f'API Call URL: {url}')
         response = requests.post(url, headers=self.get_header())
         return self.process_response(response, product)
+
+    def create_new_product(self, payload):
+        """
+        Create New Product
+        :param payload: product data
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/default/V1/products'
+        _logger.info(f'API Call URL: {url}')
+        response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response)
 
     """
     Helpers
