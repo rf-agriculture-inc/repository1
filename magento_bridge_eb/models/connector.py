@@ -147,6 +147,7 @@ class MagentoAPI(object):
                     "name": line.product_id.display_name,
                     "price": line.price_unit,
                     "attribute_set_id": self.config.attribute_set_id,
+                    "visibility": 0,
                 }
             }
             new_product_res = self.create_new_product(payload)
