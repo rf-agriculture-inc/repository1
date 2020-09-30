@@ -12,6 +12,7 @@ class ProductProduct(models.Model):
     @api.model
     def create(self, vals):
         new_id = super(ProductProduct, self).create(vals)
+        new_id.mag_create_product()
         new_id.mag_update_product_price(vals.get('lst_price'))
         return new_id
 
@@ -20,7 +21,18 @@ class ProductProduct(models.Model):
         self.mag_update_product_price(vals.get('lst_price'))
         return update_rec
 
+    def mag_create_product(self):
+        """Create new product in Magento"""
+        if self.env.company.magento_bridge and self.default_code:
+            api_connector = MagentoAPI(self)
+            res = api_connector.create_new_product(self)
+            if res.get('id'):
+                msg = "Product was successfully created in Magento."
+                self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
+                self.product_tmpl_id.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
+
     def mag_update_product_price(self, new_price):
+        """Update Wholesale price in Magento"""
         if self.env.company.magento_bridge and new_price and self.default_code:
             api_connector = MagentoAPI(self)
             if api_connector.get_config(self).update_product_price:

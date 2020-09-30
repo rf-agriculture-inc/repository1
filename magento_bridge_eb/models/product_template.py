@@ -12,6 +12,8 @@ class ProductTemplate(models.Model):
     @api.model
     def create(self, vals):
         new_id = super(ProductTemplate, self).create(vals)
+        for product in new_id.product_variant_ids:
+            product.mag_create_product()
         new_id.mag_update_product_price(vals.get('list_price'))
         return new_id
 
