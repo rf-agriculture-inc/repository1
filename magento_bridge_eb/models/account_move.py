@@ -59,3 +59,45 @@ class AccountMove(models.Model):
                                               message_type='notification')
                         except Exception as e:
                             _logger.error(e)
+        elif self.type == 'out_refund':
+            orders = self.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
+            for order in orders:
+                if order.mag_id:
+                    items = []
+                    return_to_stock_items = []
+                    shipping_amount = 0
+                    for inv_line in self.invoice_line_ids:
+                        sale_line_ids = inv_line.mapped('sale_line_ids').filtered(lambda l: l.order_id == order)
+                        for order_line in sale_line_ids:
+                            if order_line.mag_id:
+                                qty = order_line.invoice_lines.filtered(lambda i: i == inv_line).mapped('quantity')
+                                items.append({
+                                    "order_item_id": order_line.mag_id,
+                                    "qty": qty[0]
+                                })
+                                return_to_stock_items.append(order_line.mag_id)
+                            elif order_line.is_delivery:
+                                shipping_amount += order_line.invoice_lines.filtered(lambda i: i == inv_line).mapped('price_subtotal')[0]
+                    payload = {
+                        "items": items,
+                        "notify": 1,
+                        "arguments": {
+                            "shipping_amount": shipping_amount,
+                            "adjustment_positive": 0,
+                            "adjustment_negative": 0,
+                            "extension_attributes": {
+                                "return_to_stock_items": return_to_stock_items,
+                            }
+                        }
+                    }
+                    api_connector = MagentoAPI(self)
+                    res = api_connector.create_refund(self, order.mag_id, payload)
+                    if res:
+                        try:
+                            mag_id = int(res)
+                            self.mag_id = f"{self.mag_id},{mag_id}" if self.mag_id else mag_id
+                            msg = f'Credit Memo sent to Magento. Magento Credit Memo ID: {mag_id}'
+                            self.message_post(subject='Magento Integration Success', body=msg,
+                                              message_type='notification')
+                        except Exception as e:
+                            _logger.error(e)
