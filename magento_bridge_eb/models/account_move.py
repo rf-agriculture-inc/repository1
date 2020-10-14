@@ -78,13 +78,16 @@ class AccountMove(models.Model):
                                 return_to_stock_items.append(order_line.mag_id)
                             elif order_line.is_delivery:
                                 shipping_amount += order_line.invoice_lines.filtered(lambda i: i == inv_line).mapped('price_subtotal')[0]
+                    adjustment = self.amount_total - self.reversed_entry_id.amount_total
+                    adjustment_positive = adjustment if adjustment > 0 else 0
+                    adjustment_negative = abs(adjustment) if adjustment < 0 else 0
                     payload = {
                         "items": items,
                         "notify": 1,
                         "arguments": {
                             "shipping_amount": shipping_amount,
-                            "adjustment_positive": 0,
-                            "adjustment_negative": 0,
+                            "adjustment_positive": adjustment_positive,
+                            "adjustment_negative": adjustment_negative,
                             "extension_attributes": {
                                 "return_to_stock_items": return_to_stock_items,
                             }

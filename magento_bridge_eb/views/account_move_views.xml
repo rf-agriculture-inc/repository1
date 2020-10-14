@@ -6,9 +6,6 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
-                <header>
-                    <button string="Test" type="object" name="test"/>
-                </header>
                 <xpath expr="//field[@name='ref']" position="after">
                     <field name="mag_id" attrs="{'invisible': [('mag_id', '=', False)]}"/>
                 </xpath>
