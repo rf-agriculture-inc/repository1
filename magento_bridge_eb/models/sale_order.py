@@ -58,6 +58,23 @@ class SaleOrder(models.Model):
                 so.mag_cancel_order()
         return res
 
+    def action_draft(self):
+        """
+        Remove all info regarding Magento integration
+        """
+        res = super(SaleOrder, self).action_draft()
+        self.write({
+            'mag_id': False,
+            'mag_quote_id': False,
+            'client_order_ref': False,
+        })
+        for line in self.order_line:
+            line.write({
+                'mag_id': False,
+                'mag_quote_id': False,
+            })
+        return res
+
     """
        Magento Synchronization
     """
