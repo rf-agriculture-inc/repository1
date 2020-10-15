@@ -541,6 +541,47 @@ class MagentoAPI(object):
         return self.process_response(response)
 
     """
+    COUPONS
+    """
+    def create_sale_rule(self, name):
+        """
+        Save sales rule
+        :param name: rule name (string)
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/all/V1/salesRules'
+        payload = {
+            "rule": {
+                "name": name,
+            }
+        }
+        _logger.info(f'API Call URL: {url}')
+        response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response)
+
+    def generate_coupon(self, rule_id, code):
+        """
+        Generate coupon for a rule
+        :param rule_id: rule ID
+        :param code: coupon code
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/all/V1/coupons/generate'
+        payload = {
+            "couponSpec": {
+                "rule_id": rule_id,
+                "format": "string",
+                "length": len(code),
+                "quantity": 1,
+                "prefix": code,
+            }
+        }
+        _logger.info(f'API Call URL: {url}, Payload: {payload}')
+        response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
+        print(response.text)
+        return self.process_response(response)
+
+    """
     Helpers
     """
     @staticmethod
