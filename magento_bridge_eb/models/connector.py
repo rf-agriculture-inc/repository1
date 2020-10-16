@@ -553,27 +553,26 @@ class MagentoAPI(object):
         payload = {
             "rule": {
                 "name": name,
+                "coupon_type": 2,
+                "use_auto_generation": 0
             }
         }
         _logger.info(f'API Call URL: {url}')
         response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
         return self.process_response(response)
 
-    def generate_coupon(self, rule_id, code):
+    def create_coupon(self, rule_id, code):
         """
-        Generate coupon for a rule
+        Create coupon for a rule
         :param rule_id: rule ID
         :param code: coupon code
         :return: json - response or None
         """
-        url = f'{self.config.host}/rest/all/V1/coupons/generate'
+        url = f'{self.config.host}/rest/all/V1/coupons'
         payload = {
-            "couponSpec": {
+            "coupon": {
                 "rule_id": rule_id,
-                "format": "string",
-                "length": len(code),
-                "quantity": 1,
-                "prefix": code,
+                "code": code,
             }
         }
         _logger.info(f'API Call URL: {url}, Payload: {payload}')

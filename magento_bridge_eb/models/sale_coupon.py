@@ -11,12 +11,11 @@ class SaleCoupon(models.Model):
 
     @api.model
     def create(self, values):
-        # overridden to automatically invite user to sign up
         new_id = super(SaleCoupon, self).create(values)
         if self.env.company.magento_bridge:
             print(f"Send coupon {new_id.code} to Magento")
             api_connector = MagentoAPI(self)
             res = api_connector.create_sale_rule(new_id.code)
             if res.get('rule_id'):
-                api_connector.generate_coupon(res.get('rule_id'), new_id.code)
+                api_connector.create_coupon(res.get('rule_id'), new_id.code)
         return new_id
