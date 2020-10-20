@@ -573,6 +573,8 @@ class MagentoAPI(object):
             "coupon": {
                 "rule_id": rule_id,
                 "code": code,
+                "is_primary": 1,
+                "times_used": 1,
             }
         }
         _logger.info(f'API Call URL: {url}, Payload: {payload}')

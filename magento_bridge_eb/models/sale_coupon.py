@@ -13,7 +13,6 @@ class SaleCoupon(models.Model):
     def create(self, values):
         new_id = super(SaleCoupon, self).create(values)
         if self.env.company.magento_bridge:
-            print(f"Send coupon {new_id.code} to Magento")
             api_connector = MagentoAPI(self)
             res = api_connector.create_sale_rule(new_id.code)
             if res.get('rule_id'):
