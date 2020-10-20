@@ -25,11 +25,20 @@ class ProductProduct(models.Model):
         """Create new product in Magento"""
         if self.env.company.magento_bridge and self.default_code:
             api_connector = MagentoAPI(self)
-            res = api_connector.create_new_product(self)
-            if res.get('id'):
-                msg = "Product was successfully created in Magento."
-                self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
-                self.product_tmpl_id.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
+            find_sku_res = api_connector.get_product_by_sku(self.default_code)
+            if find_sku_res.status_code == 404:
+                res = api_connector.create_new_product(self)
+                if res.get('id'):
+                    msg = "Product was successfully created in Magento."
+                else:
+                    msg = res
+            elif find_sku_res.status_code == 200:
+                msg = f"Product [{self.default_code}] already exist in Magento."
+            else:
+                msg = find_sku_res.text
+            self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
+            self.product_tmpl_id.message_post(subject='Magento Integration Success', body=msg,
+                                              message_type='notification')
 
     def mag_update_product_price(self, new_price):
         """Update Wholesale price in Magento"""

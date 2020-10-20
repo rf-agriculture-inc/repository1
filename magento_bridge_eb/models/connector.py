@@ -510,7 +510,7 @@ class MagentoAPI(object):
     def update_product_price(self, product, new_price):
         """
         Update Product Base Price
-        :param product: product internal reference
+        :param product: product.product
         :param new_price: new price
         :return: json - response or None
         """
@@ -539,6 +539,16 @@ class MagentoAPI(object):
         _logger.info(f'API Call URL: {url}; Payload: {payload}')
         response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
         return self.process_response(response)
+
+    def get_product_by_sku(self, sku):
+        """
+        Get Magento Product by sku
+        :param sku: string - Product sku
+        :return: Magento Product ID or None
+        """
+        url = f'{self.config.host}/rest/all/V1/products/{sku}'
+        response = requests.get(url, headers=self.get_header())
+        return response
 
     """
     Helpers
