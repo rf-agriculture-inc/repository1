@@ -16,6 +16,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/default_data.xml',
+        'data/state_ids.xml',
         'views/config_views.xml',
         'views/custom_views.xml',
         'views/sale_order_views.xml',

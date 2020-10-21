@@ -206,7 +206,7 @@ class MagentoAPI(object):
             "addressInformation": {
                 "shippingAddress": {
                     "region": ship_address.state_id.name if ship_address.state_id else '',
-                    "region_id": 1,
+                    "region_id": ship_address.state_id.mag_id if ship_address.state_id else 0,
                     "country_id": ship_address.country_id.code if ship_address.country_id else '',
                     "street": [
                         ship_street
@@ -224,7 +224,7 @@ class MagentoAPI(object):
                 },
                 "billingAddress": {
                     "region": bill_address.state_id.name if bill_address.state_id else '',
-                    "region_id": 1,
+                    "region_id": bill_address.state_id.mag_id if bill_address.state_id else 0,
                     "country_id": bill_address.country_id.code if bill_address.country_id else '',
                     "street": [
                         bill_street

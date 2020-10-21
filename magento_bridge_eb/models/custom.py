@@ -16,3 +16,9 @@ class SaleOrderLine(models.Model):
 
     mag_id = fields.Integer(string="Magento ID", copy=False, readonly=True, help="Magento Cart Item ID")
     mag_quote_id = fields.Integer(string="Magento Quote ID", copy=False, readonly=True, help="Magento Cart Item ID")
+
+
+class CountryState(models.Model):
+    _inherit = 'res.country.state'
+
+    mag_id = fields.Integer(string="Magento ID")

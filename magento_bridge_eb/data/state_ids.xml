@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="base.state_us_1" model="res.country.state">
+            <field name="mag_id">1</field>
+        </record>
+
+        <record id="base.state_us_2" model="res.country.state">
+            <field name="mag_id">2</field>
+        </record>
+
+        <record id="base.state_us_as" model="res.country.state">
+            <field name="mag_id">3</field>
+        </record>
+
+        <record id="base.state_us_3" model="res.country.state">
+            <field name="mag_id">4</field>
+        </record>
+
+        <record id="base.state_us_4" model="res.country.state">
+            <field name="mag_id">5</field>
+        </record>
+
+        <record id="base.state_us_aa" model="res.country.state">
+            <field name="mag_id">7</field>
+        </record>
+
+        <record id="base.state_us_ae" model="res.country.state">
+            <field name="mag_id">9</field>
+        </record>
+
+        <record id="base.state_us_ap" model="res.country.state">
+            <field name="mag_id">11</field>
+        </record>
+
+        <record id="base.state_us_5" model="res.country.state">
+            <field name="mag_id">12</field>
+        </record>
+
+        <record id="base.state_us_6" model="res.country.state">
+            <field name="mag_id">13</field>
+        </record>
+
+        <record id="base.state_us_7" model="res.country.state">
+            <field name="mag_id">14</field>
+        </record>
+
+        <record id="base.state_us_8" model="res.country.state">
+            <field name="mag_id">15</field>
+        </record>
+
+        <record id="base.state_us_9" model="res.country.state">
+            <field name="mag_id">16</field>
+        </record>
+
+        <record id="base.state_us_fm" model="res.country.state">
+            <field name="mag_id">17</field>
+        </record>
+
+        <record id="base.state_us_10" model="res.country.state">
+            <field name="mag_id">18</field>
+        </record>
+
+        <record id="base.state_us_11" model="res.country.state">
+            <field name="mag_id">19</field>
+        </record>
+
+        <record id="base.state_us_gu" model="res.country.state">
+            <field name="mag_id">20</field>
+        </record>
+
+        <record id="base.state_us_12" model="res.country.state">
+            <field name="mag_id">21</field>
+        </record>
+
+        <record id="base.state_us_13" model="res.country.state">
+            <field name="mag_id">22</field>
+        </record>
+
+        <record id="base.state_us_14" model="res.country.state">
+            <field name="mag_id">23</field>
+        </record>
+
+        <record id="base.state_us_15" model="res.country.state">
+            <field name="mag_id">24</field>
+        </record>
+
+        <record id="base.state_us_16" model="res.country.state">
+            <field name="mag_id">25</field>
+        </record>
+
+        <record id="base.state_us_17" model="res.country.state">
+            <field name="mag_id">26</field>
+        </record>
+
+        <record id="base.state_us_18" model="res.country.state">
+            <field name="mag_id">27</field>
+        </record>
+
+        <record id="base.state_us_19" model="res.country.state">
+            <field name="mag_id">28</field>
+        </record>
+
+        <record id="base.state_us_20" model="res.country.state">
+            <field name="mag_id">29</field>
+        </record>
+
+        <record id="base.state_us_mh" model="res.country.state">
+            <field name="mag_id">30</field>
+        </record>
+
+        <record id="base.state_us_33" model="res.country.state">
+            <field name="mag_id">31</field>
+        </record>
+
+        <record id="base.state_us_34" model="res.country.state">
+            <field name="mag_id">32</field>
+        </record>
+
+        <record id="base.state_us_35" model="res.country.state">
+            <field name="mag_id">33</field>
+        </record>
+
+        <record id="base.state_us_36" model="res.country.state">
+            <field name="mag_id">34</field>
+        </record>
+
+        <record id="base.state_us_37" model="res.country.state">
+            <field name="mag_id">35</field>
+        </record>
+
+        <record id="base.state_us_38" model="res.country.state">
+            <field name="mag_id">36</field>
+        </record>
+
+        <record id="base.state_us_21" model="res.country.state">
+            <field name="mag_id">37</field>
+        </record>
+
+        <record id="base.state_us_22" model="res.country.state">
+            <field name="mag_id">38</field>
+        </record>
+
+        <record id="base.state_us_23" model="res.country.state">
+            <field name="mag_id">39</field>
+        </record>
+
+        <record id="base.state_us_24" model="res.country.state">
+            <field name="mag_id">40</field>
+        </record>
+
+        <record id="base.state_us_25" model="res.country.state">
+            <field name="mag_id">41</field>
+        </record>
+
+        <record id="base.state_us_26" model="res.country.state">
+            <field name="mag_id">42</field>
+        </record>
+
+        <record id="base.state_us_27" model="res.country.state">
+            <field name="mag_id">43</field>
+        </record>
+
+        <record id="base.state_us_28" model="res.country.state">
+            <field name="mag_id">44</field>
+        </record>
+
+        <record id="base.state_us_29" model="res.country.state">
+            <field name="mag_id">45</field>
+        </record>
+
+        <record id="base.state_us_mp" model="res.country.state">
+            <field name="mag_id">46</field>
+        </record>
+
+        <record id="base.state_us_30" model="res.country.state">
+            <field name="mag_id">47</field>
+        </record>
+
+        <record id="base.state_us_31" model="res.country.state">
+            <field name="mag_id">48</field>
+        </record>
+
+        <record id="base.state_us_32" model="res.country.state">
+            <field name="mag_id">49</field>
+        </record>
+
+        <record id="base.state_us_pw" model="res.country.state">
+            <field name="mag_id">50</field>
+        </record>
+
+        <record id="base.state_us_39" model="res.country.state">
+            <field name="mag_id">51</field>
+        </record>
+
+        <record id="base.state_us_pr" model="res.country.state">
+            <field name="mag_id">52</field>
+        </record>
+
+        <record id="base.state_us_40" model="res.country.state">
+            <field name="mag_id">53</field>
+        </record>
+
+        <record id="base.state_us_41" model="res.country.state">
+            <field name="mag_id">54</field>
+        </record>
+
+        <record id="base.state_us_42" model="res.country.state">
+            <field name="mag_id">55</field>
+        </record>
+
+        <record id="base.state_us_43" model="res.country.state">
+            <field name="mag_id">56</field>
+        </record>
+
+        <record id="base.state_us_44" model="res.country.state">
+            <field name="mag_id">57</field>
+        </record>
+
+        <record id="base.state_us_45" model="res.country.state">
+            <field name="mag_id">58</field>
+        </record>
+
+        <record id="base.state_us_46" model="res.country.state">
+            <field name="mag_id">59</field>
+        </record>
+
+        <record id="base.state_us_vi" model="res.country.state">
+            <field name="mag_id">60</field>
+        </record>
+
+        <record id="base.state_us_47" model="res.country.state">
+            <field name="mag_id">61</field>
+        </record>
+
+        <record id="base.state_us_48" model="res.country.state">
+            <field name="mag_id">62</field>
+        </record>
+
+        <record id="base.state_us_49" model="res.country.state">
+            <field name="mag_id">63</field>
+        </record>
+
+        <record id="base.state_us_50" model="res.country.state">
+            <field name="mag_id">64</field>
+        </record>
+
+        <record id="base.state_us_51" model="res.country.state">
+            <field name="mag_id">65</field>
+        </record>
+
+    </data>
+</odoo>

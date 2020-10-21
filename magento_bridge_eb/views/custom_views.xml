@@ -1,7 +1,7 @@
 <odoo>
     <data>
 
-        <!-- Customer View -->
+        <!-- Customer Views -->
         <record id="res_partner_form_view" model="ir.ui.view">
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
@@ -9,6 +9,16 @@
                 <xpath expr="//field[@name='type']" position="before">
                     <field name="customer_rank" invisible="1"/>
                     <field name="mag_id" attrs="{'invisible': [('customer_rank','=',0)]}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_country_state_tree" model="ir.ui.view">
+            <field name="model">res.country.state</field>
+            <field name="inherit_id" ref="base.view_country_state_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='country_id']" position="after">
+                    <field name="mag_id"/>
                 </xpath>
             </field>
         </record>
