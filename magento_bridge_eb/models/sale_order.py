@@ -163,7 +163,7 @@ class SaleOrder(models.Model):
 
             # Add items to that cart
             additional_update = False
-            order_lines = self.order_line.filtered(lambda r: r.is_delivery is False)
+            order_lines = self.order_line.filtered(lambda r: r.is_delivery is False and r.product_id.default_code)
             for line in order_lines:
                 if (not line.mag_id or line.mag_id == 0) and (not line.mag_quote_id or line.mag_quote_id == 0):
                     cart_item = api_connector.add_carts_items(quote_id, line)
@@ -184,6 +184,10 @@ class SaleOrder(models.Model):
                                           message_type='notification')
                 else:
                     additional_update = True
+
+            # Add coupons to the cart
+            for coupon in self.applied_coupon_ids:
+                api_connector.add_coupon_to_cart(quote_id, coupon.code)
 
             # Add shipping and billing info
             api_connector.add_ship_bill_info(quote_id, self)

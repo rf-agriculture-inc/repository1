@@ -2,6 +2,7 @@
 import logging
 import requests
 import json
+from datetime import datetime as dt
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -563,8 +564,16 @@ class MagentoAPI(object):
         payload = {
             "rule": {
                 "name": name,
+                "is_active": 1,
                 "coupon_type": 2,
-                "use_auto_generation": 0
+                "use_auto_generation": 0,
+                "from_date": f'{dt.now().strftime("%m")}/{dt.now().strftime("%d")}/{dt.now().strftime("%Y")}',
+                "website_ids": [
+                    1
+                ],
+                "customer_group_ids": [
+                    0, 1, 2, 3
+                ],
             }
         }
         _logger.info(f'API Call URL: {url}')
@@ -589,7 +598,18 @@ class MagentoAPI(object):
         }
         _logger.info(f'API Call URL: {url}, Payload: {payload}')
         response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
-        print(response.text)
+        return self.process_response(response)
+
+    def add_coupon_to_cart(self, cart_id, coupon_code):
+        """
+        Add coupon to the cart
+        :param cart_id: Magento Cart ID
+        :param coupon_code: Coupon Code
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/all/V1/carts/{cart_id}/coupons/{coupon_code}'
+        _logger.info(f'API Call URL: {url}')
+        response = requests.put(url, headers=self.get_header())
         return self.process_response(response)
 
     """
