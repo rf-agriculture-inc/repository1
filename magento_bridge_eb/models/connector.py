@@ -565,7 +565,8 @@ class MagentoAPI(object):
             "rule": {
                 "name": name,
                 "is_active": 1,
-                "coupon_type": 2,
+                "coupon_type": "SPECIFIC_COUPON",
+                "uses_per_coupon": 1,
                 "use_auto_generation": 0,
                 "from_date": f'{dt.now().strftime("%m")}/{dt.now().strftime("%d")}/{dt.now().strftime("%Y")}',
                 "website_ids": [
@@ -594,6 +595,8 @@ class MagentoAPI(object):
                 "code": code,
                 "is_primary": 1,
                 "times_used": 1,
+                "usage_limit": 10,
+                "usage_per_customer": 10,
             }
         }
         _logger.info(f'API Call URL: {url}, Payload: {payload}')
