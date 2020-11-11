@@ -23,6 +23,7 @@
                                 <field name="update_product_price"/>
                                 <field name="wholesale_customer_group_id"/>
                                 <field name="attribute_set_id"/>
+                                <field name="sync_coupons"/>
                             </group>
                         </group>
                         <!--<group name="payment_mapping" string="Payment Mapping">-->

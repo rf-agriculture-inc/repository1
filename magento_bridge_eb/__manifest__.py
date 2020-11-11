@@ -12,7 +12,7 @@
     'author': "Dmytro Bartoshchuk",
     'category': 'Uncategorized',
     'version': '1.0',
-    'depends': ['base', 'sale', 'sale_management', 'stock', 'account', 'delivery'],
+    'depends': ['base', 'sale', 'sale_management', 'stock', 'account', 'delivery', 'sale_coupon'],
     'data': [
         'security/ir.model.access.csv',
         'data/default_data.xml',
@@ -22,5 +22,6 @@
         'views/sale_order_views.xml',
         'views/stock_picking_views.xml',
         'views/account_move_views.xml',
+        'views/backordered_items.xml',
     ],
 }

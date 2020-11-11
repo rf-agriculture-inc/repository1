@@ -2,6 +2,7 @@
 import logging
 import requests
 import json
+from datetime import datetime as dt
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -549,6 +550,70 @@ class MagentoAPI(object):
         url = f'{self.config.host}/rest/all/V1/products/{sku}'
         response = requests.get(url, headers=self.get_header())
         return response
+
+    """
+    COUPONS
+    """
+    def create_sale_rule(self, name):
+        """
+        Save sales rule
+        :param name: rule name (string)
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/all/V1/salesRules'
+        payload = {
+            "rule": {
+                "name": name,
+                "is_active": 1,
+                "coupon_type": "SPECIFIC_COUPON",
+                "uses_per_coupon": 1,
+                "use_auto_generation": 0,
+                "from_date": f'{dt.now().strftime("%m")}/{dt.now().strftime("%d")}/{dt.now().strftime("%Y")}',
+                "website_ids": [
+                    1
+                ],
+                "customer_group_ids": [
+                    0, 1, 2, 3
+                ],
+            }
+        }
+        _logger.info(f'API Call URL: {url}')
+        response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response)
+
+    def create_coupon(self, rule_id, code):
+        """
+        Create coupon for a rule
+        :param rule_id: rule ID
+        :param code: coupon code
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/all/V1/coupons'
+        payload = {
+            "coupon": {
+                "rule_id": rule_id,
+                "code": code,
+                "is_primary": 1,
+                "times_used": 1,
+                "usage_limit": 10,
+                "usage_per_customer": 10,
+            }
+        }
+        _logger.info(f'API Call URL: {url}, Payload: {payload}')
+        response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response)
+
+    def add_coupon_to_cart(self, cart_id, coupon_code):
+        """
+        Add coupon to the cart
+        :param cart_id: Magento Cart ID
+        :param coupon_code: Coupon Code
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/all/V1/carts/{cart_id}/coupons/{coupon_code}'
+        _logger.info(f'API Call URL: {url}')
+        response = requests.put(url, headers=self.get_header())
+        return self.process_response(response)
 
     """
     Helpers
