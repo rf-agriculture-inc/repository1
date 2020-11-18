@@ -9,7 +9,8 @@
             <field name="arch" type="xml">
                 <field name="date_expected" position="before">
                     <field name="customer_id" optional="show"/>
-                    <field name="sale_line_id" optional="hide"/>
+                    <field name="sale_line_id" optional="show"/>
+                    <field name="picking_id" optional="show"/>
                 </field>
             </field>
         </record>
