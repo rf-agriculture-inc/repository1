@@ -35,7 +35,7 @@
             <field name="name">Backordered Items</field>
             <field name="res_model">stock.move</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain" eval="[('picking_id.backorder_id','!=',False)]"/>
+            <field name="domain" eval="[('picking_id.backorder_id','!=',False), ('sale_line_id','!=',False)]"/>
             <field name="help" type="html">
                 <p>
                     No Records
