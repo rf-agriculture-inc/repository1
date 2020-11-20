@@ -9,12 +9,15 @@ _logger = logging.getLogger(__name__)
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
+    from_magento = fields.Boolean(default=False, copy=False)
+
     """
     Overrided Methods
     """
     @api.model
     def create(self, vals):
-        self.env['sale.order.line.origin'].create(vals)
+        if vals.get('from_magento'):
+            self.env['sale.order.line.origin'].create(vals)
         new_id = super(SaleOrderLine, self).create(vals)
         if self.env.company.magento_bridge and new_id.order_id.state in ['sale', 'done']:
             api_connector = MagentoAPI(self)
