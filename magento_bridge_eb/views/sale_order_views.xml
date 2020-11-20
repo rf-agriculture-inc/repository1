@@ -26,7 +26,7 @@
                     <field name="will_call"/>
                 </xpath>
                 <xpath expr="//page[@name='order_lines']" position="after">
-                    <page string="Origin Order" name="order_lines_origin">
+                    <page string="Origin Order" name="order_lines_origin" attrs="{'invisible': [('order_line_origin', '=', [])]}">
                         <field name="order_line_origin" widget="section_and_note_one2many" attrs="{'readonly': 1}">
                             <tree>
                                 <field name="mag_quote_id" optional="hide"/>
