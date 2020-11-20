@@ -2,3 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_magento_bridge_config,magento.bridge.config,model_magento_bridge_config,,1,1,1,0
 access_magento_payment_mapping,magento.payment.mapping,model_magento_payment_mapping,,1,1,1,1
 access_magento_shipping_mapping,magento.shipping.mapping,model_magento_shipping_mapping,,1,1,1,1
+access_sale_order_line_origin,sale.order.line.origin,model_sale_order_line_origin,,1,1,1,1

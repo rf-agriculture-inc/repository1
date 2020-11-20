@@ -16,9 +16,13 @@ class SaleOrder(models.Model):
     x_studio_customer_po = fields.Char()
     customer_note = fields.Text()
     will_call = fields.Boolean(string="Will Call")
-    send_to_magento = fields.Boolean(string="Send Order to Magento", default=True,
-                                     states={'sale': [('readonly', True)]},
-                                     help="Send Order to Magento on Confirm action. Readonly for confirmed orders.")
+    send_to_magento = fields.Boolean(
+        string="Send Order to Magento",
+        default=True,
+        states={'sale': [('readonly', True)]},
+        help="Send Order to Magento on Confirm action. Readonly for confirmed orders."
+    )
+    order_line_origin = fields.One2many('sale.order.line.origin', 'order_id', string='Order Lines Origin')
 
     """
     Override Odoo Methods

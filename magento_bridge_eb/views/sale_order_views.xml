@@ -25,6 +25,26 @@
                 <xpath expr="//field[@name='payment_term_id']" position="after">
                     <field name="will_call"/>
                 </xpath>
+                <xpath expr="//page[@name='order_lines']" position="after">
+                    <page string="Origin Order" name="order_lines_origin">
+                        <field name="order_line_origin" widget="section_and_note_one2many" attrs="{'readonly': 1}">
+                            <tree>
+                                <field name="mag_quote_id" optional="hide"/>
+                                <field name="mag_id" optional="hide"/>
+                                <field name="product_id"/>
+                                <field name="name"/>
+                                <field name="product_uom_qty"/>
+                                <field name="product_uom"/>
+                                <field name="price_unit"/>
+                                <field name="currency_id" optional="hide"/>
+                                <field name="tax_id" widget="many2many_tags"/>
+                                <field name="discount"/>
+                                <field name="price_subtotal" widget="monetary" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                <field name="price_total" widget="monetary" groups="account.group_show_line_subtotals_tax_included"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
             </field>
         </record>
 

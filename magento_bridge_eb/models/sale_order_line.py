@@ -14,6 +14,7 @@ class SaleOrderLine(models.Model):
     """
     @api.model
     def create(self, vals):
+        self.env['sale.order.line.origin'].create(vals)
         new_id = super(SaleOrderLine, self).create(vals)
         if self.env.company.magento_bridge and new_id.order_id.state in ['sale', 'done']:
             api_connector = MagentoAPI(self)
@@ -68,3 +69,46 @@ class SaleOrderLine(models.Model):
         for line in self:
             if line.product_id.type == 'product':
                 return True
+
+
+class SaleOrderLineOrigin(models.Model):
+    _name = 'sale.order.line.origin'
+
+    name = fields.Char(string="Description")
+    order_id = fields.Many2one('sale.order')
+    product_id = fields.Many2one('product.product', string='Product')
+    product_uom_qty = fields.Float(string='Quantity', digits='Product Unit of Measure', required=True, default=1.0)
+    product_uom = fields.Many2one('uom.uom', string='Unit of Measure')
+    price_unit = fields.Float('Unit Price', required=True, digits='Product Price', default=0.0)
+    tax_id = fields.Many2many('account.tax', string='Taxes')
+    discount = fields.Float(string='Discount (%)', digits='Discount', default=0.0)
+    mag_quote_id = fields.Integer(string="Magento Quote ID", help="Magento Cart Item ID")
+    mag_id = fields.Integer(string="Magento ID", help="Magento Cart Item ID")
+    currency_id = fields.Many2one(related='order_id.currency_id', depends=['order_id.currency_id'], store=True,
+                                  string='Currency', readonly=True)
+    price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal', readonly=True, store=True)
+    price_tax = fields.Float(compute='_compute_amount', string='Total Tax', readonly=True, store=True)
+    price_total = fields.Monetary(compute='_compute_amount', string='Total', readonly=True, store=True)
+
+    @api.model
+    def create(self, vals):
+        origin_values = dict()
+        for f in self._fields.keys():
+            if f in vals.keys():
+                origin_values[f] = vals.get(f)
+        return super(SaleOrderLineOrigin, self).create(origin_values)
+
+    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
+    def _compute_amount(self):
+        """
+        Compute the amounts of the SO line.
+        """
+        for line in self:
+            price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+            taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty,
+                                            product=line.product_id, partner=line.order_id.partner_shipping_id)
+            line.update({
+                'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
+                'price_total': taxes['total_included'],
+                'price_subtotal': taxes['total_excluded'],
+            })
