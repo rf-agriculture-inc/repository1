@@ -9,6 +9,8 @@ _logger = logging.getLogger(__name__)
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
+    wholesale_markup = fields.Float(string="Wholesale Markup")
+
     @api.model
     def create(self, vals):
         new_id = super(ProductProduct, self).create(vals)

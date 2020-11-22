@@ -9,6 +9,25 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    wholesale_markup = fields.Float(
+        string="Wholesale Markup",
+        compute='_compute_wholesale_markup',
+        inverse='_set_wholesale_markup'
+    )
+
+    @api.depends('product_variant_ids', 'product_variant_ids.wholesale_markup')
+    def _compute_wholesale_markup(self):
+        unique_variants = self.filtered(lambda template: len(template.product_variant_ids) == 1)
+        for template in unique_variants:
+            template.wholesale_markup = template.product_variant_ids.wholesale_markup
+        for template in (self - unique_variants):
+            template.wholesale_markup = 0.0
+
+    def _set_wholesale_markup(self):
+        for template in self:
+            if len(template.product_variant_ids) == 1:
+                template.product_variant_ids.wholesale_markup = template.wholesale_markup
+
     @api.model
     def create(self, vals):
         new_id = super(ProductTemplate, self).create(vals)
