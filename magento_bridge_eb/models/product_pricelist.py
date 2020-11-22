@@ -21,7 +21,7 @@ class PricelistItem(models.Model):
         if self.wholesale_markup and self.compute_price not in ['fixed', 'percentage']:
             convert_to_price_uom = (lambda price: product.uom_id._compute_price(price, price_uom))
             # complete formula
-            price = price + (price * product.wholesale_markup / 100)
+            price = price + price * product.wholesale_markup
             price_limit = price
             price = (price - (price * (self.price_discount / 100))) or 0.0
             if self.price_round:

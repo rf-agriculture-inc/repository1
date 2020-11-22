@@ -528,14 +528,15 @@ class MagentoAPI(object):
     """
     PRODUCTS
     """
-    def update_product_price(self, product, new_price):
+    def update_product_price(self, product, customer_group_id, new_price):
         """
         Update Product Base Price
         :param product: product.product
+        :param customer_group_id: Magento Customer Group ID
         :param new_price: new price
         :return: json - response or None
         """
-        url = f'{self.config.host}/rest/all/V1/products/{product.default_code}/group-prices/{self.config.wholesale_customer_group_id}/tiers/1/price/{new_price}'
+        url = f'{self.config.host}/rest/all/V1/products/{product.default_code}/group-prices/{customer_group_id}/tiers/1/price/{new_price}'
         _logger.info(f'API Call URL: {url}')
         response = requests.post(url, headers=self.get_header())
         return self.process_response(response, product)

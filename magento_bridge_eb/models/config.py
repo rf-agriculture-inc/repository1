@@ -30,7 +30,6 @@ class MagentoConfig(models.Model):
     default_shipping_method_code = fields.Char(string="Shipping Method Code")
     default_shipping_carrier_code = fields.Char(string="Shipping Carrier Code")
     update_product_price = fields.Boolean(string="Update Product Prices", default=False)
-    wholesale_customer_group_id = fields.Char(string="Wholesale Customer Group ID", default="2")
     attribute_set_id = fields.Char(string="Product Attribute Set ID", default="25",
                                    help="Used in payload to create new product in Magento")
     sync_coupons = fields.Boolean(string="Synchronize Coupons", default=True)
