@@ -101,6 +101,26 @@ class MagentoAPI(object):
         }
         return self.search('customers', filters)
 
+    def update_customer_data(self, customer):
+        """
+        Update Customer Data in Magento
+        :param customer: res.partner
+        :return:
+        """
+        url = f'{self.config.host}/rest/V1/customers/{customer.mag_id}'
+        # TODO: investigate why email, firstname, lastname is required
+        payload = {"customer": {
+            "id": customer.mag_id,
+            # "email": "david.d@decofoodservice.com",
+            # "firstname": "David Fisrt",
+            # "lastname": "David Last",
+            # "website_id": 1,
+            "group_id": customer.property_product_pricelist.mag_id,
+        }}
+        _logger.info(f'API Call URL: {url}, Payload: {payload}')
+        response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response, customer)
+
     def create_customers_cart(self, customer_id):
         """
         Create a cart for the customer

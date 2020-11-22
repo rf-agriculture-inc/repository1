@@ -5,6 +5,12 @@ from odoo import models, fields, tools
 _logger = logging.getLogger(__name__)
 
 
+class ProductPricelist(models.Model):
+    _inherit = 'product.pricelist'
+
+    mag_id = fields.Integer(string="Magento ID", copy=False)
+
+
 class PricelistItem(models.Model):
     _inherit = 'product.pricelist.item'
 
