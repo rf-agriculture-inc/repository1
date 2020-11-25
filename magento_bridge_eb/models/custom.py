@@ -21,7 +21,7 @@ class ResPartner(models.Model):
             if self.env.company.magento_bridge and partner.mag_id and partner.property_product_pricelist.mag_id:
                 api_connector = MagentoAPI(self)
                 res = api_connector.update_customer_data(partner)
-                if res.get('id'):
+                if res and res.get('id'):
                     msg = f"Customer Group {partner.property_product_pricelist.name}[{partner.property_product_pricelist.mag_id}]" \
                           f"was successfully added to Customer in Magento."
                     partner.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
