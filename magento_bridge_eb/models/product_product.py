@@ -17,6 +17,13 @@ class ProductProduct(models.Model):
         new_id.mag_create_product()
         return new_id
 
+    def unlink(self):
+        for product in self:
+            product.mag_disable_product()
+        res = super(ProductProduct, self).unlink()
+
+        return res
+
     def mag_create_product(self):
         """Create new product in Magento"""
         if self.env.company.magento_bridge and self.default_code:
@@ -49,3 +56,16 @@ class ProductProduct(models.Model):
                         msg = f"{pricelist_id.name} Price was successfully updated to [{new_price}] in Magento."
                         self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
                         self.product_tmpl_id.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
+
+    def mag_disable_product(self):
+        """
+        Disable product in Magento
+        """
+        if self.env.company.magento_bridge and self.default_code:
+            api_connector = MagentoAPI(self)
+            api_connector.disable_product(self)
+
+    @api.constrains('active')
+    def mag_validate_active(self):
+        if not self.active:
+            self.mag_disable_product()

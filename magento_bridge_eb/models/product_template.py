@@ -18,7 +18,23 @@ class ProductTemplate(models.Model):
             product.mag_create_product()
         return new_id
 
+    def unlink(self):
+        for product in self:
+            product.mag_disable_product()
+        res = super(ProductTemplate, self).unlink()
+
+        return res
+
     @api.constrains('list_price')
     def mag_update_product_price(self):
         for product in self.product_variant_ids:
             product.mag_update_product_price()
+
+    def mag_disable_product(self):
+        for product in self.product_variant_ids:
+            product.mag_disable_product()
+
+    @api.constrains('active')
+    def mag_validate_active(self):
+        if not self.active:
+            self.mag_disable_product()
