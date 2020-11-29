@@ -107,14 +107,9 @@ class MagentoAPI(object):
         :param customer: res.partner
         :return:
         """
-        url = f'{self.config.host}/rest/V1/customers/{customer.mag_id}'
-        # TODO: investigate why email, firstname, lastname is required
+        url = f'{self.config.host}/rest/V1/customer/{customer.mag_id}/updatecustomergroup'
         payload = {"customer": {
             "id": customer.mag_id,
-            # "email": "david.d@decofoodservice.com",
-            # "firstname": "David Fisrt",
-            # "lastname": "David Last",
-            # "website_id": 1,
             "group_id": customer.property_product_pricelist.mag_id,
         }}
         _logger.info(f'API Call URL: {url}, Payload: {payload}')

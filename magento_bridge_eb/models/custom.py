@@ -20,11 +20,16 @@ class ResPartner(models.Model):
         for partner in self:
             if self.env.company.magento_bridge and partner.mag_id and partner.property_product_pricelist.mag_id:
                 api_connector = MagentoAPI(self)
-                res = api_connector.update_customer_data(partner)
-                if res and res.get('id'):
-                    msg = f"Customer Group {partner.property_product_pricelist.name}[{partner.property_product_pricelist.mag_id}]" \
-                          f"was successfully added to Customer in Magento."
-                    partner.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
+                try:
+                    res = api_connector.update_customer_data(partner)
+                    if res is True:
+                        msg = f"Customer Group {partner.property_product_pricelist.name}[{partner.property_product_pricelist.mag_id}]" \
+                              f"was successfully added to Customer in Magento."
+                        partner.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
+                except Exception as e:
+                    _logger.error(e)
+                    msg = "Failed to update Customer group in Magento."
+                    partner.message_post(subject='Magento Integration Error', body=msg, message_type='notification')
 
 
 class SaleOrderLine(models.Model):
