@@ -101,9 +101,9 @@ class MagentoAPI(object):
         }
         return self.search('customers', filters)
 
-    def update_customer_data(self, customer):
+    def update_customer_group(self, customer):
         """
-        Update Customer Data in Magento
+        Update Customer Group in Magento
         :param customer: res.partner
         :return:
         """
@@ -111,6 +111,24 @@ class MagentoAPI(object):
         payload = {"customer": {
             "id": customer.mag_id,
             "group_id": customer.property_product_pricelist.mag_id,
+        }}
+        _logger.info(f'API Call URL: {url}, Payload: {payload}')
+        response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response, customer)
+
+    def update_customer_tax(self, customer):
+        """
+        Update Customer Tax Status in Magento
+        :param customer: res.partner
+        :return:
+        """
+        url = f'{self.config.host}/rest/V1/customers/{customer.mag_id}'
+        payload = {"customer": {
+            "id": customer.mag_id,
+            "custom_attributes": [{
+                "attribute_code": "tax_status",
+                "value": 554,
+            }],
         }}
         _logger.info(f'API Call URL: {url}, Payload: {payload}')
         response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))

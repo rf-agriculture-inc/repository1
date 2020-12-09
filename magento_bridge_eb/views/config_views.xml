@@ -42,6 +42,14 @@
                                 </tree>
                             </field>
                         </group>
+                        <group name="tax_statuses" string="Tax Statuses">
+                            <field name="tax_status_ids" nolabel="1">
+                                <tree editable="top">
+                                    <field name="mag_id" required="1"/>
+                                    <field name="name" required="1"/>
+                                </tree>
+                            </field>
+                        </group>
                     </sheet>
                 </form>
             </field>

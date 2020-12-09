@@ -33,6 +33,7 @@ class MagentoConfig(models.Model):
     attribute_set_id = fields.Char(string="Product Attribute Set ID", default="25",
                                    help="Used in payload to create new product in Magento")
     sync_coupons = fields.Boolean(string="Synchronize Coupons", default=True)
+    tax_status_ids = fields.One2many('magento.tax.status', 'mag_config_id', string='Tax Statuses')
 
 
 class MagentoPaymentMapping(models.Model):
@@ -51,5 +52,14 @@ class MagentoShippingMapping(models.Model):
     carrier_id = fields.Many2one('delivery.carrier', string="Odoo Shipping Method")
     mag_shipping_method_code = fields.Char(string="Magento Shipping Method Code")
     mag_shipping_carrier_code = fields.Char(string="Magento Shipping Carrier Code")
+    mag_config_id = fields.Many2one('magento.bridge.config')
+
+
+class MagentoTaxStatus(models.Model):
+    _name = 'magento.tax.status'
+    _description = 'Magento Tax Status'
+
+    name = fields.Char(string="Tax Status")
+    mag_id = fields.Integer(string="Magento ID")
     mag_config_id = fields.Many2one('magento.bridge.config')
 
