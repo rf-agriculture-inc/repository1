@@ -33,6 +33,9 @@ class SaleOrder(models.Model):
         Send/Create Order in Magento if Magento Bridge activated / Validate routes
         :return: super
         """
+        # Set Salesperson
+        self.user_id = self.env.user
+
         # Validate routes
         order_lines = self.order_line
         for line in order_lines:
