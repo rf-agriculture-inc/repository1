@@ -21,7 +21,6 @@
                                 <field name="default_shipping_method_code" required="1"/>
                                 <field name="default_shipping_carrier_code" required="1"/>
                                 <field name="update_product_price"/>
-                                <field name="wholesale_customer_group_id"/>
                                 <field name="attribute_set_id"/>
                                 <field name="sync_coupons"/>
                             </group>

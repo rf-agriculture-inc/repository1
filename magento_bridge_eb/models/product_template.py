@@ -9,24 +9,32 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    wholesale_markup = fields.Float(related='product_variant_ids.wholesale_markup', readonly=False)
+
     @api.model
     def create(self, vals):
         new_id = super(ProductTemplate, self).create(vals)
         for product in new_id.product_variant_ids:
             product.mag_create_product()
-        new_id.mag_update_product_price(vals.get('list_price'))
         return new_id
 
-    def write(self, vals):
-        update_rec = super(ProductTemplate, self).write(vals)
-        self.mag_update_product_price(vals.get('list_price'))
-        return update_rec
+    def unlink(self):
+        for product in self:
+            product.mag_disable_product()
+        res = super(ProductTemplate, self).unlink()
 
-    def mag_update_product_price(self, new_price):
-        if self.env.company.magento_bridge and new_price and self.default_code:
-            api_connector = MagentoAPI(self)
-            if api_connector.get_config(self).update_product_price:
-                res = api_connector.update_product_price(self, new_price)
-                if res is True:
-                    msg = "Wholesale Price was successfully updated in Magento."
-                    self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
+        return res
+
+    @api.constrains('list_price')
+    def mag_update_product_price(self):
+        for product in self.product_variant_ids:
+            product.mag_update_product_price()
+
+    def mag_disable_product(self):
+        for product in self.product_variant_ids:
+            product.mag_disable_product()
+
+    @api.constrains('active')
+    def mag_validate_active(self):
+        if not self.active:
+            self.mag_disable_product()

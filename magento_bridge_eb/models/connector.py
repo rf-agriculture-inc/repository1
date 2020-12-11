@@ -101,6 +101,21 @@ class MagentoAPI(object):
         }
         return self.search('customers', filters)
 
+    def update_customer_data(self, customer):
+        """
+        Update Customer Data in Magento
+        :param customer: res.partner
+        :return:
+        """
+        url = f'{self.config.host}/rest/V1/customer/{customer.mag_id}/updatecustomergroup'
+        payload = {"customer": {
+            "id": customer.mag_id,
+            "group_id": customer.property_product_pricelist.mag_id,
+        }}
+        _logger.info(f'API Call URL: {url}, Payload: {payload}')
+        response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response, customer)
+
     def create_customers_cart(self, customer_id):
         """
         Create a cart for the customer
@@ -508,14 +523,15 @@ class MagentoAPI(object):
     """
     PRODUCTS
     """
-    def update_product_price(self, product, new_price):
+    def update_product_price(self, product, customer_group_id, new_price):
         """
         Update Product Base Price
         :param product: product.product
+        :param customer_group_id: Magento Customer Group ID
         :param new_price: new price
         :return: json - response or None
         """
-        url = f'{self.config.host}/rest/all/V1/products/{product.default_code}/group-prices/{self.config.wholesale_customer_group_id}/tiers/1/price/{new_price}'
+        url = f'{self.config.host}/rest/all/V1/products/{product.default_code}/group-prices/{customer_group_id}/tiers/1/price/{new_price}'
         _logger.info(f'API Call URL: {url}')
         response = requests.post(url, headers=self.get_header())
         return self.process_response(response, product)
@@ -548,8 +564,26 @@ class MagentoAPI(object):
         :return: Magento Product ID or None
         """
         url = f'{self.config.host}/rest/all/V1/products/{sku}'
+        _logger.info(f'API Call URL: {url}')
         response = requests.get(url, headers=self.get_header())
         return response
+
+    def disable_product(self, product_id):
+        """
+        Create New Product
+        :param product_id: product (product.product)
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/all/V1/products/{product_id.default_code}'
+        payload = {
+            "product": {
+                "sku": product_id.default_code,
+                "status": 2,
+            }
+        }
+        _logger.info(f'API Call URL: {url}; Payload: {payload}')
+        response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response)
 
     """
     COUPONS

@@ -9,17 +9,20 @@ _logger = logging.getLogger(__name__)
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
+    wholesale_markup = fields.Float(string="Wholesale Markup")
+
     @api.model
     def create(self, vals):
         new_id = super(ProductProduct, self).create(vals)
         new_id.mag_create_product()
-        new_id.mag_update_product_price(vals.get('lst_price'))
         return new_id
 
-    def write(self, vals):
-        update_rec = super(ProductProduct, self).write(vals)
-        self.mag_update_product_price(vals.get('lst_price'))
-        return update_rec
+    def unlink(self):
+        for product in self:
+            product.mag_disable_product()
+        res = super(ProductProduct, self).unlink()
+
+        return res
 
     def mag_create_product(self):
         """Create new product in Magento"""
@@ -40,12 +43,29 @@ class ProductProduct(models.Model):
             self.product_tmpl_id.message_post(subject='Magento Integration Success', body=msg,
                                               message_type='notification')
 
-    def mag_update_product_price(self, new_price):
-        """Update Wholesale price in Magento"""
-        if self.env.company.magento_bridge and new_price and self.default_code:
+    @api.constrains('lst_price', 'standard_price', 'wholesale_markup')
+    def mag_update_product_price(self):
+        if self.env.company.magento_bridge and self.default_code:
             api_connector = MagentoAPI(self)
             if api_connector.get_config(self).update_product_price:
-                res = api_connector.update_product_price(self, new_price)
-                if res is True:
-                    msg = "Wholesale Price was successfully updated in Magento."
-                    self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
+                pricelists = self.env['product.pricelist'].search([('mag_id', '>', 0)])
+                for pricelist_id in pricelists:
+                    new_price = self.with_context(pricelist=pricelist_id.id).price
+                    res = api_connector.update_product_price(self, pricelist_id.mag_id, new_price)
+                    if res is True:
+                        msg = f"{pricelist_id.name} Price was successfully updated to [{new_price}] in Magento."
+                        self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
+                        self.product_tmpl_id.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
+
+    def mag_disable_product(self):
+        """
+        Disable product in Magento
+        """
+        if self.env.company.magento_bridge and self.default_code:
+            api_connector = MagentoAPI(self)
+            api_connector.disable_product(self)
+
+    @api.constrains('active')
+    def mag_validate_active(self):
+        if not self.active:
+            self.mag_disable_product()
