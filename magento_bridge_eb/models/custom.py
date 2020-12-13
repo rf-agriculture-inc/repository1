@@ -21,7 +21,7 @@ class ResPartner(models.Model):
             if self.env.company.magento_bridge and partner.mag_id and partner.property_product_pricelist.mag_id:
                 api_connector = MagentoAPI(self)
                 try:
-                    res = api_connector.update_customer_data(partner)
+                    res = api_connector.update_customer_group(partner)
                     if res is True:
                         msg = f"Customer Group {partner.property_product_pricelist.name}[{partner.property_product_pricelist.mag_id}]" \
                               f"was successfully added to Customer in Magento."
@@ -29,6 +29,27 @@ class ResPartner(models.Model):
                 except Exception as e:
                     _logger.error(e)
                     msg = "Failed to update Customer group in Magento."
+                    partner.message_post(subject='Magento Integration Error', body=msg, message_type='notification')
+
+    @api.constrains('property_account_position_id')
+    def mag_update_customer_tax(self):
+        """
+        Update Customer Tax Status for related customer in Magento
+        :return:
+        """
+        for partner in self:
+            if self.env.company.magento_bridge and partner.mag_id and partner.property_account_position_id.mag_tax_status:
+                api_connector = MagentoAPI(self)
+                try:
+                    res = api_connector.update_customer_tax(partner)
+                    if res is True:
+                        msg = f"Customer Tax Status [{partner.property_account_position_id.mag_tax_status.name}] " \
+                              f"was successfully added to Customer in Magento."
+                        partner.message_post(subject='Magento Integration Success', body=msg,
+                                             message_type='notification')
+                except Exception as e:
+                    _logger.error(e)
+                    msg = "Failed to update Customer Tax Status in Magento."
                     partner.message_post(subject='Magento Integration Error', body=msg, message_type='notification')
 
 

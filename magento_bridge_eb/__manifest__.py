@@ -26,5 +26,6 @@
         'views/sale_order_line_origin_views.xml',
         'views/product_views.xml',
         'views/product_pricelist_views.xml',
+        'views/fiscal_position_views.xml',
     ],
 }
