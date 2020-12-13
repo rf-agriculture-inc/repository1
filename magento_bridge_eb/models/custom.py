@@ -49,7 +49,28 @@ class ResPartner(models.Model):
                                              message_type='notification')
                 except Exception as e:
                     _logger.error(e)
-                    msg = "Failed to update Customer Tax Status in Magento."
+                    msg = f"Failed to update Customer Tax Status in Magento. Reason: {e}"
+                    partner.message_post(subject='Magento Integration Error', body=msg, message_type='notification')
+
+    @api.constrains('property_payment_term_id')
+    def mag_update_customer_payment_term(self):
+        """
+        Update Customer Payment Terms for related customer in Magento
+        :return:
+        """
+        for partner in self:
+            if self.env.company.magento_bridge and partner.mag_id and partner.property_payment_term_id.mag_payment_terms:
+                api_connector = MagentoAPI(self)
+                try:
+                    res = api_connector.update_customer_payment_terms(partner)
+                    if res is True:
+                        msg = f"Customer Payment Terms [{partner.property_payment_term_id.mag_payment_terms.name}] " \
+                              f"was successfully added to Customer in Magento."
+                        partner.message_post(subject='Magento Integration Success', body=msg,
+                                             message_type='notification')
+                except Exception as e:
+                    _logger.error(e)
+                    msg = f"Failed to update Customer Payment Terms in Magento. Reason: {e}"
                     partner.message_post(subject='Magento Integration Error', body=msg, message_type='notification')
 
 

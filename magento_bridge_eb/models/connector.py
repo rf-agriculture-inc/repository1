@@ -133,6 +133,23 @@ class MagentoAPI(object):
         response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
         return self.process_response(response, customer)
 
+    def update_customer_payment_terms(self, customer):
+        """
+        Update Customer Payment Terms in Magento
+        :param customer: res.partner
+        :return:
+        """
+        url = f'{self.config.host}/rest/V1/customer/{customer.mag_id}/updatecustomerattributes'
+        payload = {"customer": {
+            "custom_attributes": [{
+                "attribute_code": "payment_terms",
+                "value": customer.property_payment_term_id.mag_payment_terms.mag_id,
+            }],
+        }}
+        _logger.info(f'API Call URL: {url}, Payload: {payload}')
+        response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response, customer)
+
     def create_customers_cart(self, customer_id):
         """
         Create a cart for the customer

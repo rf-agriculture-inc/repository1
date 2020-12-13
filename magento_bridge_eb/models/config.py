@@ -34,6 +34,7 @@ class MagentoConfig(models.Model):
                                    help="Used in payload to create new product in Magento")
     sync_coupons = fields.Boolean(string="Synchronize Coupons", default=True)
     tax_status_ids = fields.One2many('magento.tax.status', 'mag_config_id', string='Tax Statuses')
+    payment_terms_ids = fields.One2many('magento.payment.terms', 'mag_config_id', string='Payment Terms')
 
 
 class MagentoPaymentMapping(models.Model):
@@ -60,6 +61,15 @@ class MagentoTaxStatus(models.Model):
     _description = 'Magento Tax Status'
 
     name = fields.Char(string="Tax Status")
+    mag_id = fields.Integer(string="Magento ID")
+    mag_config_id = fields.Many2one('magento.bridge.config')
+
+
+class MagentoPaymentTerms(models.Model):
+    _name = 'magento.payment.terms'
+    _description = 'Magento Payment Terms'
+
+    name = fields.Char(string="Payment Terms")
     mag_id = fields.Integer(string="Magento ID")
     mag_config_id = fields.Many2one('magento.bridge.config')
 

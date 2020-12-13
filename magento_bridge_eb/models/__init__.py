@@ -13,3 +13,4 @@ from . import product_template
 from . import product_product
 from . import product_pricelist
 from . import fiscal_position
+from . import payment_terms

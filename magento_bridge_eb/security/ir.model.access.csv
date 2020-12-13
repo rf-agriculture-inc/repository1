@@ -3,4 +3,5 @@ access_magento_bridge_config,magento.bridge.config,model_magento_bridge_config,,
 access_magento_payment_mapping,magento.payment.mapping,model_magento_payment_mapping,,1,1,1,1
 access_magento_shipping_mapping,magento.shipping.mapping,model_magento_shipping_mapping,,1,1,1,1
 access_magento_tax_status,magento.tax.status,model_magento_tax_status,,1,1,1,1
+access_magento_payment_terms,magento.payment.terms,model_magento_payment_terms,,1,1,1,1
 access_sale_order_line_origin,sale.order.line.origin,model_sale_order_line_origin,,1,1,1,1
