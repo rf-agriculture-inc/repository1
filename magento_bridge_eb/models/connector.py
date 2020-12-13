@@ -197,6 +197,7 @@ class MagentoAPI(object):
         url = f'{self.config.host}/rest/V1/carts/{quote_id}/shipping-information'
 
         # Prepare payload
+        customer = order.partner_id
         ship_address = order.partner_shipping_id
         bill_address = order.partner_invoice_id
         ship_company_name = ship_address.name if ship_address.company_type == 'company' else ship_address.company_name or ''
@@ -215,6 +216,7 @@ class MagentoAPI(object):
         bill_street = bill_address.street or ''
         if bill_address.street2:
             bill_street = f'{bill_street}, {bill_address.street2}'
+        telephone = ship_address.mobile or ship_address.phone or bill_address.mobile or bill_address.phone or customer.mobile or customer.phone
 
         shipping_method_code, shipping_carrier_code = self.get_shipping_codes(order)
 
@@ -228,7 +230,7 @@ class MagentoAPI(object):
                         ship_street
                     ],
                     "company": ship_company_name,
-                    "telephone": ship_address.mobile or ship_address.phone,
+                    "telephone": telephone,
                     "postcode": ship_address.zip,
                     "city": ship_address.city,
                     "firstname": ship_firstname,
@@ -246,7 +248,7 @@ class MagentoAPI(object):
                         bill_street
                     ],
                     "company": bill_company_name,
-                    "telephone": bill_address.mobile or bill_address.phone,
+                    "telephone": bill_address.mobile or bill_address.phone or customer.mobile or customer.phone,
                     "postcode": bill_address.zip,
                     "city": bill_address.city,
                     "firstname": bill_firstname,
