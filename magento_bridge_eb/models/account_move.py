@@ -47,6 +47,8 @@ class AccountMove(models.Model):
                                             "order_item_id": order_line.mag_id,
                                             "qty": qty[0]
                                         })
+                        if len(items) == 0:
+                            continue
                         payload = {"items": items}
 
                     res = api_connector.create_invoice(self, order.mag_id, payload)
