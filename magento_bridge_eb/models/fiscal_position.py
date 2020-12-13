@@ -8,4 +8,4 @@ _logger = logging.getLogger(__name__)
 class FiscalPosition(models.Model):
     _inherit = 'account.fiscal.position'
 
-    mag_tax_status = fields.Many2one('magento.tax.status')
+    mag_tax_status = fields.Many2one('magento.tax.status', string="Magento Tax Status")

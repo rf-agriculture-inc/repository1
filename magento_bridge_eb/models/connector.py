@@ -122,12 +122,11 @@ class MagentoAPI(object):
         :param customer: res.partner
         :return:
         """
-        url = f'{self.config.host}/rest/V1/customers/{customer.mag_id}'
+        url = f'{self.config.host}/rest/V1/customer/{customer.mag_id}/updatecustomerattributes'
         payload = {"customer": {
-            "id": customer.mag_id,
             "custom_attributes": [{
                 "attribute_code": "tax_status",
-                "value": 554,
+                "value": customer.property_account_position_id.mag_tax_status.mag_id,
             }],
         }}
         _logger.info(f'API Call URL: {url}, Payload: {payload}')

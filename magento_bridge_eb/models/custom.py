@@ -38,12 +38,12 @@ class ResPartner(models.Model):
         :return:
         """
         for partner in self:
-            if self.env.company.magento_bridge and partner.mag_id: #  TODO: and partner.property_account_position_id.mag_id:
+            if self.env.company.magento_bridge and partner.mag_id and partner.property_account_position_id.mag_tax_status:
                 api_connector = MagentoAPI(self)
                 try:
                     res = api_connector.update_customer_tax(partner)
                     if res is True:
-                        msg = f"Customer Tax Status " \
+                        msg = f"Customer Tax Status [{partner.property_account_position_id.mag_tax_status.name}] " \
                               f"was successfully added to Customer in Magento."
                         partner.message_post(subject='Magento Integration Success', body=msg,
                                              message_type='notification')
