@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from odoo import models, fields, tools
+from odoo import models, fields, tools, api
 
 _logger = logging.getLogger(__name__)
 
@@ -15,6 +15,19 @@ class PricelistItem(models.Model):
     _inherit = 'product.pricelist.item'
 
     wholesale_markup = fields.Boolean(string="Use Wholesale Markup")
+
+    @api.model
+    def create(self, vals):
+        new_id = super(PricelistItem, self).create(vals)
+        if new_id.applied_on == '1_product':
+            new_id.product_tmpl_id.mag_update_product_price()
+        return new_id
+
+    def write(self, vals):
+        res = super(PricelistItem, self).write(vals)
+        if self.applied_on == '1_product':
+            self.product_tmpl_id.mag_update_product_price()
+        return res
 
     def _compute_price(self, price, price_uom, product, quantity=1.0, partner=False):
         self.ensure_one()
