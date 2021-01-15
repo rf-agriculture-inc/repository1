@@ -621,6 +621,23 @@ class MagentoAPI(object):
         response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
         return self.process_response(response)
 
+    def update_product_name(self, product_id):
+        """
+        Update Product Name
+        :param product_id: product (product.product)
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/all/V1/products/{product_id.default_code}'
+        payload = {
+            "product": {
+                "sku": product_id.default_code,
+                "name": product_id.name,
+            }
+        }
+        _logger.info(f'API Call URL: {url}; Payload: {payload}')
+        response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response)
+
     """
     COUPONS
     """
