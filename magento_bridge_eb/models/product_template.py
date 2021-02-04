@@ -25,6 +25,11 @@ class ProductTemplate(models.Model):
 
         return res
 
+    @api.constrains('name')
+    def mag_update_product_name(self):
+        for product in self.product_variant_ids:
+            product.mag_update_product_name()
+
     @api.constrains('list_price')
     def mag_update_product_price(self):
         for product in self.product_variant_ids:
