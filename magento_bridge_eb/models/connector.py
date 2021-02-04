@@ -588,6 +588,7 @@ class MagentoAPI(object):
                 "attribute_set_id": self.config.attribute_set_id,
                 "visibility": 1,
                 "type_id": "simple",
+                "status": 0,
             }
         }
         _logger.info(f'API Call URL: {url}; Payload: {payload}')
