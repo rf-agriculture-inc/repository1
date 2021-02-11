@@ -578,7 +578,7 @@ class MagentoAPI(object):
         :param product_id: product (product.product)
         :return: json - response or None
         """
-        url = f'{self.config.host}/rest/default/V1/products'
+        url = f'{self.config.host}/rest/all/V1/products'
         payload = {
             "product": {
                 "sku": product_id.default_code,
