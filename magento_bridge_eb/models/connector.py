@@ -430,8 +430,13 @@ class MagentoAPI(object):
             subtotal = order_line.price_subtotal
             subtotal_incl_tax = order_line.price_total
         else:
-            subtotal = round(order_line.price_subtotal / (1 - order_line.discount / 100), 2)
-            subtotal_incl_tax = round(order_line.price_total / (1 - order_line.discount / 100), 2)
+            order_line_discount = order_line.discount
+            if order_line_discount == 100:
+                subtotal = 0
+                subtotal_incl_tax = 0
+            else:
+                subtotal = round(order_line.price_subtotal / (1 - order_line_discount / 100), 2)
+                subtotal_incl_tax = round(order_line.price_total / (1 - order_line_discount / 100), 2)
 
         payload = {
             "order_id": order_line.order_id.mag_id,
