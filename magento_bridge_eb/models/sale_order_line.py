@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import json
 from odoo import models, fields, api, _
 from .connector import MagentoAPI
 
@@ -60,6 +61,24 @@ class SaleOrderLine(models.Model):
                 if item['mag_id']:
                     api_connector.remove_order_item(item['order_id'], item['mag_id'])
         return res
+
+    @api.constrains('product_id')
+    def mag_validate_product(self):
+        """
+        Check if product is enabled in Magento and enable if not
+        """
+        sku = self.product_id.default_code
+        if self.env.company.magento_bridge and sku:
+            api_connector = MagentoAPI(self)
+            res = api_connector.get_product_by_sku(sku)
+            data = json.loads(res.content)
+            if res.ok:
+                status = data.get('status')
+                if status != 1:
+                    api_connector.enable_product(self.product_id)
+            else:
+                msg = data.get('message', False) or data
+                _logger.error(msg)
 
     """
     Custom Logic

@@ -611,9 +611,26 @@ class MagentoAPI(object):
         response = requests.get(url, headers=self.get_header())
         return response
 
+    def enable_product(self, product_id):
+        """
+        Enable Product
+        :param product_id: product (product.product)
+        :return: json - response or None
+        """
+        url = f'{self.config.host}/rest/all/V1/products/{product_id.default_code}'
+        payload = {
+            "product": {
+                "sku": product_id.default_code,
+                "status": 1,
+            }
+        }
+        _logger.info(f'API Call URL: {url}; Payload: {payload}')
+        response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response)
+
     def disable_product(self, product_id):
         """
-        Create New Product
+        Disable Product
         :param product_id: product (product.product)
         :return: json - response or None
         """
