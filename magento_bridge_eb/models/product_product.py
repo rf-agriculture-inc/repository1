@@ -56,7 +56,8 @@ class ProductProduct(models.Model):
 
     @api.constrains('standard_price', 'wholesale_markup')
     def mag_update_product_price(self):
-        if self.env.company.magento_bridge and self.default_code:
+        is_import = self.env.context.get('_import_current_module') == '__import__'
+        if self.env.company.magento_bridge and self.default_code and not is_import:
             api_connector = MagentoAPI(self)
             if api_connector.get_config(self).update_product_price:
                 pricelists = self.env['product.pricelist'].search([('mag_id', '>', 0)])
