@@ -54,7 +54,7 @@ class ProductProduct(models.Model):
                 self.product_tmpl_id.message_post(subject='Magento Integration Success', body=msg,
                                                   message_type='notification')
 
-    @api.constrains('lst_price', 'standard_price', 'wholesale_markup')
+    @api.constrains('standard_price', 'wholesale_markup')
     def mag_update_product_price(self):
         if self.env.company.magento_bridge and self.default_code:
             api_connector = MagentoAPI(self)
@@ -62,6 +62,11 @@ class ProductProduct(models.Model):
                 pricelists = self.env['product.pricelist'].search([('mag_id', '>', 0)])
                 for pricelist_id in pricelists:
                     new_price = self.with_context(pricelist=pricelist_id.id).price
+
+                    # This price assignment here looks very strange, but client's wish is a low
+                    self.lst_price = new_price
+                    self.product_tmpl_id.list_price = new_price
+
                     res = api_connector.update_product_price(self, pricelist_id.mag_id, new_price)
                     if res is True:
                         msg = f"{pricelist_id.name} Price was successfully updated to [{new_price}] in Magento."

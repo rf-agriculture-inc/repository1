@@ -30,7 +30,7 @@ class ProductTemplate(models.Model):
         for product in self.product_variant_ids:
             product.mag_update_product_name()
 
-    @api.constrains('list_price')
+    @api.constrains('purchase_price')
     def mag_update_product_price(self):
         for product in self.product_variant_ids:
             product.mag_update_product_price()
