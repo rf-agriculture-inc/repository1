@@ -11,9 +11,12 @@
                   <field name="purchase_price" widget="monetary"
                          options="{'currency_field': 'cost_currency_id', 'field_digits': True}"/>
               </xpath>
-            <xpath expr="//field[@name='standard_price']" position="attributes">
-                <attribute name="readonly">1</attribute>
-            </xpath>
+              <xpath expr="//field[@name='standard_price']" position="attributes">
+                  <attribute name="readonly">1</attribute>
+              </xpath>
+              <xpath expr="//field[@name='company_id']" position="before">
+                    <field name="wholesale_markup" widget="percentage"/>
+                </xpath>
           </field>
       </record>
 

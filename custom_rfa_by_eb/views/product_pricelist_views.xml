@@ -1,0 +1,23 @@
+<odoo>
+    <data>
+
+        <record id="product_pricelist_item_form_view_rfa_inherited" model="ir.ui.view">
+            <field name="name">product.pricelist.item.form.view.rfa.inherited</field>
+            <field name="model">product.pricelist.item</field>
+            <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
+            <field name="priority">33</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='base']" position="after">
+                    <field name="wholesale_markup" attrs="{'invisible':[('compute_price', '!=', 'formula')]}"/>
+                </xpath>
+                <xpath expr="//group[@name='pricelist_rule_advanced']/div[1]" position="inside">
+                    <span attrs="{'invisible':[('base', '!=', 'purchase_price')]}">Purchase Price  -  </span>
+                </xpath>
+                <xpath expr="//group[@name='pricelist_rule_advanced']/div[1]/span[1]" position="before">
+                    <span attrs="{'invisible':[('wholesale_markup', '=', False)]}">Wholsale Markup(%) + </span>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
