@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields
+from .connector import MagentoAPI
 
 
 class ResCompany(models.Model):
@@ -35,6 +36,30 @@ class MagentoConfig(models.Model):
     sync_coupons = fields.Boolean(string="Synchronize Coupons", default=True)
     tax_status_ids = fields.One2many('magento.tax.status', 'mag_config_id', string='Tax Statuses')
     payment_terms_ids = fields.One2many('magento.payment.terms', 'mag_config_id', string='Payment Terms')
+
+    def update_product_prices(self, price_type="fixed", website_id=0, customer_group="Wholesale", group_id=2, quantity=1):
+        """
+        Update product prices in Magento for products with flag 'mag_to_update'
+        """
+        products = self.env['product.template'].search([('mag_to_update', '=', True)])
+        if products:
+            prices = []
+            for p in products:
+                new_price = p.with_context(pricelist=group_id).price
+                p.list_price = new_price
+                vals = {
+                    "price": new_price,
+                    "price_type": price_type,
+                    "website_id": website_id,
+                    "sku": p.default_code,
+                    "customer_group": customer_group,
+                    "quantity": quantity,
+                }
+                prices.append(vals)
+            payload = {"prices": prices}
+            api_connector = MagentoAPI(self)
+            api_connector.mass_update_product_price(payload)
+            products.mag_to_update = False
 
 
 class MagentoPaymentMapping(models.Model):

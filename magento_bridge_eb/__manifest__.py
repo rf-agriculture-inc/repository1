@@ -15,6 +15,7 @@
     'depends': ['base', 'sale', 'sale_management', 'stock', 'account', 'delivery', 'sale_coupon'],
     'data': [
         'security/ir.model.access.csv',
+        'data/crons.xml',
         'data/default_data.xml',
         'data/state_ids.xml',
         'views/config_views.xml',
@@ -24,7 +25,7 @@
         'views/account_move_views.xml',
         'views/backordered_items.xml',
         'views/sale_order_line_origin_views.xml',
-        # 'views/product_views.xml',
+        'views/product_views.xml',
         'views/product_pricelist_views.xml',
         'views/fiscal_position_views.xml',
         'views/payment_terms_views.xml',

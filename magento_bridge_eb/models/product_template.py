@@ -10,6 +10,7 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     wholesale_markup = fields.Float(related='product_variant_ids.wholesale_markup', readonly=False)
+    mag_to_update = fields.Boolean(string="To Update in Magento")
 
     @api.model
     def create(self, vals):

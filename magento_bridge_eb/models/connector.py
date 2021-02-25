@@ -726,6 +726,12 @@ class MagentoAPI(object):
         response = requests.put(url, headers=self.get_header())
         return self.process_response(response)
 
+    def mass_update_product_price(self, payload):
+        url = f'{self.config.host}/rest/V1/products/tier-prices'
+        _logger.info(f'API Call URL: {url}')
+        response = requests.post(url, headers=self.get_header(), data=json.dumps(payload))
+        return self.process_response(response)
+
     """
     Helpers
     """
