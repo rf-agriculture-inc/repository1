@@ -56,7 +56,7 @@ class ProductProduct(models.Model):
 
     @api.constrains('standard_price', 'wholesale_markup')
     def mag_update_product_price(self):
-        is_import = self.env.context.get('_import_current_module') == '__import__'
+        is_import = self.env.context.get('import_file') or self.env.context.get('_import_current_module') == '__import__'
         if is_import:
             self.product_tmpl_id.mag_to_update = True
         if self.env.company.magento_bridge and self.default_code and not is_import:
