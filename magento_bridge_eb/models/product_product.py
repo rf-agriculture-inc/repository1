@@ -6,6 +6,29 @@ from .connector import MagentoAPI
 _logger = logging.getLogger(__name__)
 
 
+class ProductSupplierInfo(models.Model):
+    _inherit = 'product.supplierinfo'
+
+    @api.model
+    def create(self, vals):
+        new_id = super(ProductSupplierInfo, self).create(vals)
+        self.mag_check_values_for_update({'price': new_id.price}, new_id=new_id)
+        return new_id
+
+    def write(self, vals):
+        res = super(ProductSupplierInfo, self).write(vals)
+        self.mag_check_values_for_update(vals)
+        return res
+
+    def mag_check_values_for_update(self, vals, new_id=None):
+        obj = new_id if new_id else self
+        is_price_update = vals.get('price')
+        if not self.env.context.get('import_file') and is_price_update:
+            obj.product_tmpl_id.mag_update_product_price()
+        elif is_price_update:
+            obj.product_tmpl_id.mag_to_update = True
+
+
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
@@ -23,6 +46,18 @@ class ProductProduct(models.Model):
         res = super(ProductProduct, self).unlink()
 
         return res
+
+    def write(self, vals):
+        res = super(ProductProduct, self).write(vals)
+        self.mag_check_values_for_update(vals)
+        return res
+
+    def mag_check_values_for_update(self, vals):
+        is_price_update = vals.get('wholesale_markup')
+        if not self.env.context.get('import_file') and is_price_update:
+            self.mag_update_product_price()
+        elif is_price_update:
+            self.product_tmpl_id.mag_to_update = True
 
     def mag_create_product(self):
         """Create new product in Magento"""
@@ -54,13 +89,8 @@ class ProductProduct(models.Model):
                 self.product_tmpl_id.message_post(subject='Magento Integration Success', body=msg,
                                                   message_type='notification')
 
-    @api.constrains('standard_price', 'wholesale_markup')
     def mag_update_product_price(self):
-        _logger.info(f"CONTEXT: {self.env.context}")
-        is_import = self.env.context.get('import_file') or self.env.context.get('_import_current_module') == '__import__'
-        if is_import:
-            self.product_tmpl_id.mag_to_update = True
-        if self.env.company.magento_bridge and self.default_code and not is_import:
+        if self.env.company.magento_bridge and self.default_code:
             api_connector = MagentoAPI(self)
             if api_connector.get_config(self).update_product_price:
                 pricelists = self.env['product.pricelist'].search([('mag_id', '>', 0)])
