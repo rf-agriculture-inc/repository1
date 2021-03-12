@@ -16,8 +16,10 @@ class ProductSupplierInfo(models.Model):
         return new_id
 
     def write(self, vals):
+        price_before = self.price
         res = super(ProductSupplierInfo, self).write(vals)
-        self.mag_check_values_for_update(vals)
+        if price_before != self.price:
+            self.mag_check_values_for_update(vals)
         return res
 
     def mag_check_values_for_update(self, vals, new_id=None):
