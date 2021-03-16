@@ -85,11 +85,13 @@ class ProductProduct(models.Model):
         if self.env.company.magento_bridge and self.default_code:
             api_connector = MagentoAPI(self)
             res = api_connector.update_product_name(self)
-            if res.get('id'):
+            if res and res.get('id'):
                 msg = f"New product name {self.name}  was successfully updated in Magento."
                 self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
                 self.product_tmpl_id.message_post(subject='Magento Integration Success', body=msg,
                                                   message_type='notification')
+            else:
+                self.mag_create_product()
 
     def mag_update_product_price(self):
         if self.env.company.magento_bridge and self.default_code:
