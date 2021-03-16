@@ -19,3 +19,13 @@ class RFAProductProduct(models.Model):
         else:
             prices = super(RFAProductProduct, self).price_compute(price_type, uom, currency, company)
         return prices
+
+
+class RFAProductSupplierInfo(models.Model):
+    _inherit = 'product.supplierinfo'
+
+    def write(self, vals):
+        res = super(RFAProductSupplierInfo, self).write(vals)
+        if vals.get('sequence') or self.price or vals.get('sequence'):
+            self.product_tmpl_id._compute_purchase_price()
+        return res
