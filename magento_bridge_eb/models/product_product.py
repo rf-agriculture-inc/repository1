@@ -12,19 +12,20 @@ class ProductSupplierInfo(models.Model):
     @api.model
     def create(self, vals):
         new_id = super(ProductSupplierInfo, self).create(vals)
-        self.mag_check_values_for_update({'price': new_id.price}, new_id=new_id)
+        new_id.product_tmpl_id.mag_to_update = True
+        # self.mag_check_values_for_update({'price': new_id.price}, new_id=new_id)
         return new_id
 
     def write(self, vals):
         price_before = self.price
         res = super(ProductSupplierInfo, self).write(vals)
-        if price_before != self.price:
+        if price_before != self.price or vals.get('sequence'):
             self.mag_check_values_for_update(vals)
         return res
 
     def mag_check_values_for_update(self, vals, new_id=None):
         obj = new_id if new_id else self
-        is_price_update = vals.get('price')
+        is_price_update = vals.get('price') or vals.get('sequence')
         if not self.env.context.get('import_file') and is_price_update:
             obj.product_tmpl_id.mag_update_product_price()
         elif is_price_update:

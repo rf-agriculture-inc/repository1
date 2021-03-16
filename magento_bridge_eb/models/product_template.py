@@ -19,6 +19,13 @@ class ProductTemplate(models.Model):
             product.mag_create_product()
         return new_id
 
+    def write(self, vals):
+        si_before = self.seller_ids
+        res = super(ProductTemplate, self).write(vals)
+        if not si_before and vals.get('seller_ids'):
+            self.mag_update_product_price()
+        return res
+
     def unlink(self):
         for product in self:
             product.mag_disable_product()
