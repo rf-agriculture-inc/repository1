@@ -56,6 +56,8 @@ class MagentoConfig(models.Model):
                     "quantity": quantity,
                 }
                 prices.append(vals)
+                msg = f"New price was sent to Magento [{new_price}] after batch import."
+                p.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
             payload = {"prices": prices}
             api_connector = MagentoAPI(self)
             api_connector.mass_update_product_price(payload)

@@ -15,7 +15,7 @@ class RFAProductProduct(models.Model):
             products = self
             prices = dict.fromkeys(self.ids, 0.0)
             for product in products:
-                prices[product.id] = product.product_tmpl_id.purchase_price or 0.0
+                prices[product.id] = product.product_tmpl_id.purchase_price or product.product_tmpl_id.list_price
         else:
             prices = super(RFAProductProduct, self).price_compute(price_type, uom, currency, company)
         return prices

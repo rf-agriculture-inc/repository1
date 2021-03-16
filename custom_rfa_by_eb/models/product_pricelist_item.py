@@ -18,7 +18,10 @@ class RFAPricelistItem(models.Model):
         if self.wholesale_markup and self.compute_price not in ['fixed', 'percentage']:
             convert_to_price_uom = (lambda price: product.uom_id._compute_price(price, price_uom))
             # complete formula
-            price = price + price * product.wholesale_markup
+            if product.wholesale_markup > 0 and product.purchase_price:
+                price = price + price * product.wholesale_markup
+            else:
+                price = product.list_price
             price_limit = price
             price = (price - (price * (self.price_discount / 100))) or 0.0
             if self.price_round:
