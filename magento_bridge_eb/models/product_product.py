@@ -87,6 +87,8 @@ class ProductProduct(models.Model):
                     msg = res
             elif find_sku_res.status_code == 200:
                 msg = f"Product [{self.default_code}] already exist in Magento."
+                self.mag_update_product_name()
+                self.mag_update_product_price()
             else:
                 msg = find_sku_res.text
             self.message_post(subject='Magento Integration Success', body=msg, message_type='notification')
