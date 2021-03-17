@@ -39,6 +39,8 @@ class ProductProduct(models.Model):
 
     @api.model
     def create(self, vals):
+        if self.env.context.get('wholesale_markup'):
+            vals.update({'wholesale_markup': self.env.context.get('wholesale_markup')})
         new_id = super(ProductProduct, self).create(vals)
         new_id.mag_create_product()
         return new_id
@@ -65,6 +67,16 @@ class ProductProduct(models.Model):
     def mag_create_product(self):
         """Create new product in Magento"""
         if self.env.company.magento_bridge and self.default_code:
+
+            # TODO: to refactor - temp solution for new products
+            pricelists = self.env['product.pricelist'].search([('mag_id', '>', 0)])
+            for pricelist_id in pricelists:
+                new_price = self.with_context(pricelist=pricelist_id.id).price
+
+                # This price assignment here looks very strange, but client's wish is a low
+                self.lst_price = new_price
+                self.product_tmpl_id.list_price = new_price
+
             api_connector = MagentoAPI(self)
             find_sku_res = api_connector.get_product_by_sku(self.default_code)
             if find_sku_res.status_code == 404:

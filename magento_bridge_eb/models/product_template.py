@@ -14,6 +14,8 @@ class ProductTemplate(models.Model):
 
     @api.model
     def create(self, vals):
+        if vals.get('wholesale_markup'):
+            self = self.with_context(wholesale_markup=vals.get('wholesale_markup'))
         new_id = super(ProductTemplate, self).create(vals)
         for product in new_id.product_variant_ids:
             product.mag_create_product()
