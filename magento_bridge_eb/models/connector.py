@@ -432,8 +432,8 @@ class MagentoAPI(object):
         else:
             order_line_discount = order_line.discount
             if order_line_discount == 100:
-                subtotal = 0
-                subtotal_incl_tax = 0
+                subtotal = discount_amount
+                subtotal_incl_tax = discount_amount
             else:
                 subtotal = round(order_line.price_subtotal / (1 - order_line_discount / 100), 2)
                 subtotal_incl_tax = round(order_line.price_total / (1 - order_line_discount / 100), 2)
@@ -477,8 +477,8 @@ class MagentoAPI(object):
         else:
             order_line_discount = order_line.discount
             if order_line_discount == 100:
-                subtotal = 0
-                subtotal_incl_tax = 0
+                subtotal = discount_amount
+                subtotal_incl_tax = discount_amount
             else:
                 subtotal = round(order_line.price_subtotal / (1 - order_line_discount / 100), 2)
                 subtotal_incl_tax = round(order_line.price_total / (1 - order_line_discount / 100), 2)
