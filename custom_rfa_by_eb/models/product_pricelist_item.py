@@ -19,7 +19,7 @@ class RFAPricelistItem(models.Model):
             convert_to_price_uom = (lambda price: product.uom_id._compute_price(price, price_uom))
             # complete formula
             if product.wholesale_markup > 0 and product.purchase_price:
-                price = price + price * product.wholesale_markup
+                price = round(price + price * product.wholesale_markup, 2)
             else:
                 price = product.list_price
             price_limit = price
