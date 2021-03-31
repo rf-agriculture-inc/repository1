@@ -17,11 +17,12 @@ class ProductSupplierInfo(models.Model):
         return new_id
 
     def write(self, vals):
-        price_before = self.price
-        res = super(ProductSupplierInfo, self).write(vals)
-        if price_before != self.price or vals.get('sequence'):
-            self.mag_check_values_for_update(vals)
-        return res
+        for rec in self:
+            price_before = rec.price
+            res = super(ProductSupplierInfo, self).write(vals)
+            if price_before != rec.price or vals.get('sequence'):
+                self.mag_check_values_for_update(vals)
+        return True
 
     def mag_check_values_for_update(self, vals, new_id=None):
         obj = new_id if new_id else self

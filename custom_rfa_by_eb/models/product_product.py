@@ -25,7 +25,8 @@ class RFAProductSupplierInfo(models.Model):
     _inherit = 'product.supplierinfo'
 
     def write(self, vals):
-        res = super(RFAProductSupplierInfo, self).write(vals)
-        if vals.get('sequence') or self.price or vals.get('sequence'):
-            self.product_tmpl_id._compute_purchase_price()
-        return res
+        for rec in self:
+            res = super(RFAProductSupplierInfo, self).write(vals)
+            if vals.get('sequence') or rec.price or vals.get('sequence'):
+                rec.product_tmpl_id._compute_purchase_price()
+        return True
