@@ -26,7 +26,7 @@ class RFAProductSupplierInfo(models.Model):
 
     def write(self, vals):
         for rec in self:
-            res = super(RFAProductSupplierInfo, self).write(vals)
+            super(RFAProductSupplierInfo, self).write(vals)
             if vals.get('sequence') or rec.price or vals.get('sequence'):
                 rec.product_tmpl_id._compute_purchase_price()
         return True
