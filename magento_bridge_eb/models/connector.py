@@ -622,10 +622,10 @@ class MagentoAPI(object):
         :param product_id: product (product.product)
         :return: json - response or None
         """
-        url = f'{self.config.host}/rest/all/V1/products/{product_id.default_code}'
+        url = f'{self.config.host}/rest/all/V1/products/{product_id.product_tmpl_id.default_code}'
         payload = {
             "product": {
-                "sku": product_id.default_code,
+                "sku": product_id.product_tmpl_id.default_code,
                 "status": 1,
             }
         }
@@ -639,10 +639,10 @@ class MagentoAPI(object):
         :param product_id: product (product.product)
         :return: json - response or None
         """
-        url = f'{self.config.host}/rest/all/V1/products/{product_id.default_code}'
+        url = f'{self.config.host}/rest/all/V1/products/{product_id.product_tmpl_id.default_code}'
         payload = {
             "product": {
-                "sku": product_id.default_code,
+                "sku": product_id.product_tmpl_id.default_code,
                 "status": 2,
             }
         }
@@ -656,10 +656,10 @@ class MagentoAPI(object):
         :param product_id: product (product.product)
         :return: json - response or None
         """
-        url = f'{self.config.host}/rest/all/V1/products/{product_id.default_code}'
+        url = f'{self.config.host}/rest/all/V1/products/{product_id.product_tmpl_id.default_code}'
         payload = {
             "product": {
-                "sku": product_id.default_code,
+                "sku": product_id.product_tmpl_id.default_code,
                 "name": product_id.name,
             }
         }
