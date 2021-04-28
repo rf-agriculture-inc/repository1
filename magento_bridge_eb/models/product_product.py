@@ -133,7 +133,13 @@ class ProductProduct(models.Model):
         """
         if self.env.company.magento_bridge and self.default_code:
             api_connector = MagentoAPI(self)
-            api_connector.disable_product(self)
+            res = api_connector.disable_product(self)
+            if res and res.get('id') and res.get('status') and res.get('sku'):
+                msg = f"Product {res.get('sku')} was disabled in Magento: id: {res.get('id')}, status: {res.get('status')}"
+            else:
+                msg = f"Smth went wrong. Response: {res}"
+            self.product_tmpl_id.message_post(
+                subject='Magento Integration status', body=msg, message_type='notification')
 
     @api.constrains('active')
     def mag_validate_active(self):

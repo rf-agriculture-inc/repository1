@@ -648,7 +648,7 @@ class MagentoAPI(object):
         }
         _logger.info(f'API Call URL: {url}; Payload: {payload}')
         response = requests.put(url, headers=self.get_header(), data=json.dumps(payload))
-        return self.process_response(response)
+        return self.process_response(response, product_id.product_tmpl_id)
 
     def update_product_name(self, product_id):
         """
